@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Mock Interview</h1>
+    <div id="question-container">
+        <h3 id="current-question"></h3>
+    </div>
+    <div id="answer-container">
+        <textarea id="user-answer" placeholder="Your answer here..."></textarea>
+        <button onclick="submitAnswer()">Submit Answer</button>
+    </div>
+
+    <script>
+        let questionIndex = 0;
+
+        function loadNextQuestion() {
+            $.get("/mock_interview/ask_questions/?question_index=" + questionIndex, function(data) {
+                if (data.status === "question_asked") {
+                    $("#current-question").text(data.question);  // Display the current question
+                    questionIndex = data.next_question_index;
+
+                    // You could also show the answer if needed
+                    console.log("User Answer: ", data.user_answer);
+                }
+            });
+        }
+
+        function submitAnswer() {
+            const userAnswer = $("#user-answer").val();
+
+            // Send the user's answer and load the next question
+            $.post("/mock_interview/submit_answer/", { answer: userAnswer }, function() {
+                loadNextQuestion();
+                $("#user-answer").val("");  // Clear the answer field
+            });
+        }
+
+        // Load the first question on page load
+        loadNextQuestion();
+    </script>
+</body>
+</html>
