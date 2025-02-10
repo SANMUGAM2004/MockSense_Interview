@@ -1,0 +1,18 @@
+<!-- mock_interview/templates/mock_interview/result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview - Results</title>
+</head>
+<body>
+    <h1>Interview Results</h1>
+    <ul>
+        {% for question, answer in responses.items %}
+            <li><strong>{{ question }}</strong>: {{ answer }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'mock_interview_index' %}"><button>Back to Home</button></a>
+</body>
+</html>
