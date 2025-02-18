@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -149,5 +149,173 @@
         <img src="/mock_interview/video_feed/" width="300px">
     </div>
     
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview</title>
+    <style>
+        #camera-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            height: 220px;
+            border: 2px solid black;
+            background: black;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script>
+        let questionIndex = 0;
+        let questions = [];
+        let interviewStarted = false;
+
+        function getCSRFToken() {
+            let csrfToken = null;
+            const csrfCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrftoken='));
+            if (csrfCookie) {
+                csrfToken = csrfCookie.split('=')[1];
+            }
+            return csrfToken;
+        }
+
+        // Wait until user answer is recorded before moving to the next question
+        function listenToAnswer(index) {
+            fetch("/mock_interview/listen/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ duration: 5 })  // Listen for 5 seconds
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "completed") {
+                    const userAnswer = data.answer;
+                    console.log("User Answer: ", userAnswer);
+                    saveUserAnswer(index, userAnswer);
+                    
+                    // Move to next question only after recording is done
+                    setTimeout(showNextQuestion, 2000);  
+                }
+            });
+        }
+            function startInterview() {
+                fetch("/mock_interview/start/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "started") {
+                        questions = data.questions;
+                        interviewStarted = true;
+                        startEmotionDetection();
+                        showNextQuestion();
+                    }
+                });
+            }
+
+        function showNextQuestion() {
+            if (questionIndex < questions.length) {
+                const questionText = questions[questionIndex];
+                document.getElementById("question").innerText = questionText;
+
+                speakQuestion(questionText);
+
+                // Wait for 2 seconds before recording answer
+                setTimeout(() => {
+                    listenToAnswer(questionIndex);
+                }, 2000);
+            } else {
+                document.getElementById("question").innerText = "Interview complete!";
+            }
+        }
+
+        function speakQuestion(text) {
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = text;
+            speech.volume = 1;
+            speech.rate = 1;
+            speech.pitch = 1;
+            window.speechSynthesis.speak(speech);
+        }
+
+        function listenToAnswer(index) {
+            fetch("/mock_interview/listen/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ duration: 5 })  // Listen for 5 seconds
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "completed") {
+                    const userAnswer = data.answer;
+                    console.log("User Answer: ", userAnswer);
+                    saveUserAnswer(index, userAnswer);
+
+                    setTimeout(() => {
+                        questionIndex++;
+                        showNextQuestion();
+                    }, 2000);
+                }
+            });
+        }
+
+        function saveUserAnswer(index, answer) {
+            fetch("/mock_interview/save_answer/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ question_index: index, answer: answer })
+            });
+        }
+
+        function startEmotionDetection() {
+            const video = document.createElement("video");
+            video.id = "emotion-video";
+            video.autoplay = true;
+            document.getElementById("camera-container").appendChild(video);
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error("Error accessing webcam:", error);
+                });
+
+            setInterval(() => {
+                console.log("Emotion detection running...");
+            }, 5000);
+        }
+    </script>
+</head>
+<body>
+    <h1>Mock Interview</h1>
+    <p id="question">Click start to begin your interview.</p>
+    <button onclick="startInterview()">Start Interview</button>
+    <a href="{% url 'mock_interview_result' %}"><button>View Results</button></a>
+
+    <div id="camera-container">
+        <img src="/mock_interview/video_feed/" width="300px">
+    </div>
 </body>
 </html>
