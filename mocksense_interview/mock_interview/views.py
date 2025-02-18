@@ -1,11 +1,12 @@
 # Updated code========
-
 import json
 import random
 import time
 import pyttsx3
 import cv2
+import os
 import threading
+import logging
 import numpy as np
 import speech_recognition as sr
 from django.http import JsonResponse, StreamingHttpResponse
@@ -46,46 +47,134 @@ confused_start_time = None
 quote_display_time = None
 current_quote = None
 
-# Load Questions from JSON
-with open(settings.BASE_DIR / "mock_interview/ML_model/questions.json", "r") as file:
-    questions_data = json.load(file)
-questions = questions_data["questions"]
+# # Load Questions from JSON
+# with open(settings.BASE_DIR / "mock_interview/ML_model/questions.json", "r") as file:
+#     questions_data = json.load(file)
+# questions = questions_data["questions"]
+
+#  Load questions from JSON file
+def load_questions():
+    """Dynamically load questions from JSON each time it's called"""
+    questions_path = os.path.join(settings.BASE_DIR, "mock_interview", "ML_model", "questions.json")
+    with open(questions_path, "r", encoding="utf-8") as file:
+        questions_data = json.load(file)
+    return questions_data["questions"]
+
+def start_interview(request):
+    """Return questions when the interview starts"""
+     # Define the path for the user answers file
+    file_path = os.path.join(settings.BASE_DIR, "mock_interview", "user_answers.json")
+    
+    # Delete the file if it exists (reset the answers before starting the interview)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    questions = load_questions()  # Load questions dynamically
+    return JsonResponse({"status": "started", "questions": questions})
+
+# Save User's Answer
+@csrf_exempt
+def save_answer(request):
+    """Saves the user's answer"""
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            question_index = data["question_index"]
+            answer = data["answer"]
+
+            # Save answer in a JSON file (or database)
+            with open("mock_interview/user_answers.json", "a") as file:
+                json.dump({"question_index": question_index, "answer": answer}, file)
+                file.write("\n")
+
+            return JsonResponse({"status": "saved"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-# Initialize pyttsx3 TTS engine
-engine = pyttsx3.init()
+def listen_answer(request):
+    """Captures user's voice and converts it into text"""
+    if request.method == "POST":
+        recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            print("Listening...")
+            try:
+                audio = recognizer.listen(source, timeout=5)  # Listen for 5 seconds
+                user_answer = recognizer.recognize_google(audio)  # Convert speech to text
+                print("User said:", user_answer)
+                
+                return JsonResponse({"status": "completed", "answer": user_answer})
+            except sr.UnknownValueError:
+                return JsonResponse({"status": "completed", "answer": "Could not understand"})
+            except sr.RequestError:
+                return JsonResponse({"status": "error", "message": "Speech recognition API unavailable"})
+    
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
-# Configuration for speech
-engine.setProperty('rate', 150)  # Speed of speech
-engine.setProperty('volume', 1)  # Volume level (0.0 to 1.0)
+# Set up logging
+logger = logging.getLogger(__name__)
 
-# ANSWER_TIME_LIMIT = 60  # Time limit for answering each question (modifiable)
-ANSWER_TIME_LIMIT = 10  # 10 seconds for now for demonstration
+def mock_interview_result(request):
+    """Reads the stored answers from user_answers.json"""
+    # Define the file path
+    file_path = os.path.join(settings.BASE_DIR, "mock_interview", "user_answers.json")
 
-# Function to speak text aloud (Text-to-Speech)
-def speak_text(text):
-    engine.say(text)
-    engine.runAndWait()
+    # Log the file path
+    logger.info(f"Attempting to read answers from: {file_path}")
+
+    # Ensure the file exists before reading it
+    if not os.path.exists(file_path):
+        logger.warning(f"File not found: {file_path}. Creating a new one.")
+        with open(file_path, "w") as file:
+            json.dump([], file)  # Create an empty list if the file doesn't exist
+
+    try:
+        with open(file_path, "r") as file:
+            answers = json.load(file)  # Read JSON data
+        logger.info(f"Answers read successfully: {answers}")
+        return JsonResponse({"answers": answers})
+    except Exception as e:
+        # Log the exception for debugging
+        logger.error(f"Error reading file {file_path}: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# # Initialize pyttsx3 TTS engine
+# engine = pyttsx3.init()
+
+# # Configuration for speech
+# engine.setProperty('rate', 150)  # Speed of speech
+# engine.setProperty('volume', 1)  # Volume level (0.0 to 1.0)
+
+# # ANSWER_TIME_LIMIT = 60  # Time limit for answering each question (modifiable)
+# ANSWER_TIME_LIMIT = 10  # 10 seconds for now for demonstration
+
+# # Function to speak text aloud (Text-to-Speech)
+# def speak_text(text):
+#     engine.say(text)
+#     engine.runAndWait()
 
 # Function to listen to the user's answer and transcribe it
-def listen_answer():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        recognizer.adjust_for_ambient_noise(source)  # Adjust for ambient noise
-        print("Listening for your answer...")
-        try:
-            audio = recognizer.listen(source, timeout=ANSWER_TIME_LIMIT)
-            user_answer = recognizer.recognize_google(audio)
-            print(f"User Answer: {user_answer}")
-            return user_answer
-        except sr.UnknownValueError:
-            return "Sorry, I couldn't understand that."
-        except sr.RequestError:
-            return "Speech recognition service unavailable."
-        except sr.WaitTimeoutError:
-            return "No speech detected."
+# def listen_answer():
+#     recognizer = sr.Recognizer()
+#     with sr.Microphone() as source:
+#         recognizer.adjust_for_ambient_noise(source)  # Adjust for ambient noise
+#         print("Listening for your answer...")
+#         try:
+#             audio = recognizer.listen(source, timeout=ANSWER_TIME_LIMIT)
+#             user_answer = recognizer.recognize_google(audio)
+#             print(f"User Answer: {user_answer}")
+#             return user_answer
+#         except sr.UnknownValueError:
+#             return "Sorry, I couldn't understand that."
+#         except sr.RequestError:
+#             return "Speech recognition service unavailable."
+#         except sr.WaitTimeoutError:
+#             return "No speech detected."
 
 # # Function to ask questions and collect answers
+# @csrf_exempt
 # def ask_questions(request):
 #     question_index = int(request.GET.get('question_index', 0))  # Default to 0 if not provided
 #     user_answers = []
@@ -104,90 +193,39 @@ def listen_answer():
 #     speech_thread = threading.Thread(target=speak_text, args=(question,))
 #     speech_thread.start()
 
-#     # Wait for the question to be spoken (you can adjust this depending on the question length)
-#     time.sleep(1)  # Sleep for a brief moment to let the question be heard
+#     # Wait for the question to be spoken (adjust sleep time if needed)
+#     time.sleep(1)  # Brief pause to let the question be heard
 
 #     # Listen for the user's answer within the time limit
 #     user_answer = listen_answer()
 
 #     # Save the user's answer
 #     user_answers.append(user_answer)
-#     print({
+#     print(f"Answer for Question {question_index + 1}: {user_answer}")
+
+#     # Prepare the response for the next question
+#     next_question_index = question_index + 1
+
+#     # Send next question as JSON response to update the frontend
+#     response_data = {
 #         "status": "question_asked",
 #         "question": question,
-#         "next_question_index": question_index + 1,
+#         "next_question_index": next_question_index,
 #         "user_answer": user_answer
-#     })
+#     }
 
-#     # Send next question as JSON response
-#     return JsonResponse({
-#         "status": "question_asked",
-#         "question": question,
-#         "next_question_index": question_index + 1,
-#         "user_answer": user_answer
-#     })
+#     # You can now call this in your frontend to update the page dynamically with JavaScript
 
-# Function to ask questions and collect answers
-@csrf_exempt
-def ask_questions(request):
-    question_index = int(request.GET.get('question_index', 0))  # Default to 0 if not provided
-    user_answers = []
+#     return JsonResponse(response_data)
 
-    # If we've reached the end of the questions, return the results
-    if question_index >= len(questions):
-        with open(settings.BASE_DIR / "mock_interview/useranswer.txt", "w") as file:
-            file.writelines(user_answers)
-        return JsonResponse({"status": "completed", "answers": user_answers})
-
-    # Get the next question
-    question = questions[question_index]
-    print(f"Asking Question: {question}")
-
-    # Trigger TTS to read the question aloud in a separate thread
-    speech_thread = threading.Thread(target=speak_text, args=(question,))
-    speech_thread.start()
-
-    # Wait for the question to be spoken (adjust sleep time if needed)
-    time.sleep(1)  # Brief pause to let the question be heard
-
-    # Listen for the user's answer within the time limit
-    user_answer = listen_answer()
-
-    # Save the user's answer
-    user_answers.append(user_answer)
-    print(f"Answer for Question {question_index + 1}: {user_answer}")
-
-    # Prepare the response for the next question
-    next_question_index = question_index + 1
-
-    # Send next question as JSON response to update the frontend
-    response_data = {
-        "status": "question_asked",
-        "question": question,
-        "next_question_index": next_question_index,
-        "user_answer": user_answer
-    }
-
-    # You can now call this in your frontend to update the page dynamically with JavaScript
-
-    return JsonResponse(response_data)
-
-# View: Start Interview
-def start_interview(request):
-    # Trigger the question asking process by sending the first question
-    return ask_questions(request)
+# # View: Start Interview
+# def start_interview(request):
+#     # Trigger the question asking process by sending the first question
+#     return ask_questions(request)
 
 # View: Render Quiz Page
 def quiz_view(request):
     return render(request, "mock_interview/quiz.html")
-
-# View: Show Results
-def mock_interview_result(request):
-    # Fetch answers from the file
-    with open(settings.BASE_DIR / "mock_interview/useranswer.txt", "r") as file:
-        user_answers = file.readlines()
-
-    return render(request, "mock_interview/result.html", {"answers": user_answers})
 
 # Function: Video Stream Generator
 def generate_frames():
@@ -245,70 +283,9 @@ def generate_frames():
 def video_feed(request):
     return StreamingHttpResponse(generate_frames(), content_type="multipart/x-mixed-replace; boundary=frame")
 
-# # Function: Listen and Transcribe Audio for Answers
-# @csrf_exempt
-# def listen_answer(request):
-#     if request.method == "POST":
-#         recognizer = sr.Recognizer()
-#         with sr.Microphone() as source:
-#             print("Listening for answer...")
-#             recognizer.adjust_for_ambient_noise(source)
-
-#             try:
-#                 audio = recognizer.listen(source, timeout=5)  # Listen for 5 seconds
-#                 user_answer = recognizer.recognize_google(audio)
-
-#                 # Save to file
-#                 with open(settings.BASE_DIR / "mock_interview/useranswer.txt", "a") as file:
-#                     file.write(user_answer + "\n")
-
-#                 return JsonResponse({"status": "completed", "answer": user_answer})
-
-#             except sr.UnknownValueError:
-#                 return JsonResponse({"status": "error", "message": "Could not understand audio"})
-#             except sr.RequestError:
-#                 return JsonResponse({"status": "error", "message": "Speech recognition service unavailable"})
-#             except sr.WaitTimeoutError:
-#                 return JsonResponse({"status": "error", "message": "No speech detected."})
-
-# # Function to ask questions and collect answers
-# def ask_questions(request):
-#     question_index = 0
-#     start_time = time.time()
-#     user_answers = []
-
-#     while question_index < len(questions) and time.time() - start_time < ANSWER_TIME_LIMIT:
-#         question = questions[question_index]
-#         print(f"Asking Question: {question}")
-
-#         # Render question page with current question
-#         return render(request, "mock_interview/question.html", {"question": question, "question_index": question_index + 1})
-
-#         # After asking question, listen for the answer
-#         response = listen_answer(request)
-#         if response.status_code == 200:
-#             user_answers.append(response.json()['answer'])
-#         question_index += 1
-
-#     # Save answers to file
-#     with open(settings.BASE_DIR / "mock_interview/useranswer.txt", "w") as file:
-#         file.writelines(user_answers)
-
-#     return JsonResponse({"status": "completed", "answers": user_answers})
-
 # View: Render Quiz Page
-# def quiz_view(request):
-#     return render(request, "mock_interview/quiz.html")
+def quiz_view(request):
+    return render(request, "mock_interview/quiz.html")
 
-# View: Show Results
-# def mock_interview_result(request):
-#     # Fetch answers from the file
-#     with open(settings.BASE_DIR / "mock_interview/useranswer.txt", "r") as file:
-#         user_answers = file.readlines()
-
-#     return render(request, "mock_interview/result.html", {"answers": user_answers})
-
-# # In views.py
-# def start_interview(request):
-#     # Trigger the question asking process
-#     return ask_questions(request)
+def index(request):
+    return render(request,"mock_interview/index.html" )
