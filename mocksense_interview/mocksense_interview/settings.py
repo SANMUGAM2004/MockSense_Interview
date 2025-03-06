@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'aptitude',
     'mock_interview',
+    'group_discussion'
 ]
 
 MIDDLEWARE = [
