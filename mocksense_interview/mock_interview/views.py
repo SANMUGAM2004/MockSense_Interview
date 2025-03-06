@@ -14,6 +14,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.conf import settings
 from keras.models import model_from_json
+import spacy
+from django.core.files.storage import default_storage
+from pdfminer.high_level import extract_text
+from pathlib import Path
+
+# Load spaCy model
+nlp = spacy.load("en_core_web_sm")
 
 # Load Emotion Detection Model
 emotion_model_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.json"
@@ -47,10 +54,9 @@ confused_start_time = None
 quote_display_time = None
 current_quote = None
 
-# # Load Questions from JSON
-# with open(settings.BASE_DIR / "mock_interview/ML_model/questions.json", "r") as file:
-#     questions_data = json.load(file)
-# questions = questions_data["questions"]
+# Load keywords for skills & projects
+with open(settings.BASE_DIR / "mock_interview/ML_model/keywords.json", "r") as file:
+    keywords = json.load(file)
 
 #  Load questions from JSON file
 def load_questions():
@@ -140,89 +146,6 @@ def mock_interview_result(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
-# # Initialize pyttsx3 TTS engine
-# engine = pyttsx3.init()
-
-# # Configuration for speech
-# engine.setProperty('rate', 150)  # Speed of speech
-# engine.setProperty('volume', 1)  # Volume level (0.0 to 1.0)
-
-# # ANSWER_TIME_LIMIT = 60  # Time limit for answering each question (modifiable)
-# ANSWER_TIME_LIMIT = 10  # 10 seconds for now for demonstration
-
-# # Function to speak text aloud (Text-to-Speech)
-# def speak_text(text):
-#     engine.say(text)
-#     engine.runAndWait()
-
-# Function to listen to the user's answer and transcribe it
-# def listen_answer():
-#     recognizer = sr.Recognizer()
-#     with sr.Microphone() as source:
-#         recognizer.adjust_for_ambient_noise(source)  # Adjust for ambient noise
-#         print("Listening for your answer...")
-#         try:
-#             audio = recognizer.listen(source, timeout=ANSWER_TIME_LIMIT)
-#             user_answer = recognizer.recognize_google(audio)
-#             print(f"User Answer: {user_answer}")
-#             return user_answer
-#         except sr.UnknownValueError:
-#             return "Sorry, I couldn't understand that."
-#         except sr.RequestError:
-#             return "Speech recognition service unavailable."
-#         except sr.WaitTimeoutError:
-#             return "No speech detected."
-
-# # Function to ask questions and collect answers
-# @csrf_exempt
-# def ask_questions(request):
-#     question_index = int(request.GET.get('question_index', 0))  # Default to 0 if not provided
-#     user_answers = []
-
-#     # If we've reached the end of the questions, return the results
-#     if question_index >= len(questions):
-#         with open(settings.BASE_DIR / "mock_interview/useranswer.txt", "w") as file:
-#             file.writelines(user_answers)
-#         return JsonResponse({"status": "completed", "answers": user_answers})
-
-#     # Get the next question
-#     question = questions[question_index]
-#     print(f"Asking Question: {question}")
-
-#     # Trigger TTS to read the question aloud in a separate thread
-#     speech_thread = threading.Thread(target=speak_text, args=(question,))
-#     speech_thread.start()
-
-#     # Wait for the question to be spoken (adjust sleep time if needed)
-#     time.sleep(1)  # Brief pause to let the question be heard
-
-#     # Listen for the user's answer within the time limit
-#     user_answer = listen_answer()
-
-#     # Save the user's answer
-#     user_answers.append(user_answer)
-#     print(f"Answer for Question {question_index + 1}: {user_answer}")
-
-#     # Prepare the response for the next question
-#     next_question_index = question_index + 1
-
-#     # Send next question as JSON response to update the frontend
-#     response_data = {
-#         "status": "question_asked",
-#         "question": question,
-#         "next_question_index": next_question_index,
-#         "user_answer": user_answer
-#     }
-
-#     # You can now call this in your frontend to update the page dynamically with JavaScript
-
-#     return JsonResponse(response_data)
-
-# # View: Start Interview
-# def start_interview(request):
-#     # Trigger the question asking process by sending the first question
-#     return ask_questions(request)
-
 # View: Render Quiz Page
 def quiz_view(request):
     return render(request, "mock_interview/quiz.html")
@@ -289,3 +212,54 @@ def quiz_view(request):
 
 def index(request):
     return render(request,"mock_interview/index.html" )
+
+def resume_uploading(request):
+    return render(request,"mock_interview/resume_upload.html")
+
+
+@csrf_exempt
+def upload_resume(request):
+    if request.method == "POST" and request.FILES.get("resume"):
+        uploaded_file = request.FILES["resume"]
+        file_path = default_storage.save("resumes/" + uploaded_file.name, uploaded_file)
+
+        # Extract text from PDF
+        resume_text = extract_text(Path(settings.MEDIA_ROOT) / file_path)
+
+        # Extract details from resume
+        parsed_data = extract_resume_entities(resume_text)
+        
+        # ✅ Save extracted data to JSON
+        json_path = Path(settings.MEDIA_ROOT) / "resume_data.json"
+        with open(json_path, "w", encoding="utf-8") as json_file:
+            json.dump(parsed_data, json_file, indent=4)
+
+        return JsonResponse(parsed_data, safe=False)
+    
+    return JsonResponse({"error": "No file uploaded"}, status=400)
+
+def extract_resume_entities(text):
+    doc = nlp(text)
+    extracted_data = {"Name": "", "Skills": [], "Projects": []}
+
+    skillset, projectset = set(), set()
+
+    # Extract name
+    for ent in doc.ents:
+        if ent.label_ == "PERSON" and not extracted_data["Name"]:
+            extracted_data["Name"] = ent.text
+
+    # Extract Skills & Projects
+    for line in text.split("\n"):
+        for skill in keywords["skills"]:
+            if skill.lower() in line.lower():
+                skillset.add(skill)
+
+        for project in keywords["projects"]:
+            if project in line.lower():
+                projectset.add(line.strip())
+
+    extracted_data["Skills"] = list(skillset)
+    extracted_data["Projects"] = [proj.replace("\u2022", "").strip() for proj in projectset]
+
+    return extracted_data

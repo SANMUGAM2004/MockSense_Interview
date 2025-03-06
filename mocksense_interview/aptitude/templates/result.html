@@ -46,7 +46,7 @@
     <p>Percentage: <strong>{{ percentage|floatformat:2 }}%</strong></p>
 
     <!-- Next button to move to the mock interview stage -->
-    <a href="{% url 'mock_interview_index' %}" class="next-btn">Next</a>
+    <a href="{% url 'resume_uploading' %}" class="next-btn">Next</a>
 
     <!-- Optional: You can keep the Try Again button as well -->
     <form action="{% url 'quiz_view' %}" method="get">

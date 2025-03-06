@@ -1,0 +1,14 @@
+{
+    "skills": [
+        "Python", "Java", "JavaScript", "C++", "C#", "Swift", "Kotlin", "Django", "Flask",
+        "React", "Angular", "Vue.js", "Node.js", "Express.js", "TensorFlow", "PyTorch",
+        "Machine Learning", "Deep Learning", "Data Science", "NLP", "AI", "SQL", "PostgreSQL",
+        "MongoDB", "AWS", "Azure", "Docker", "Kubernetes", "CI/CD", "GraphQL", "REST API",
+        "Blockchain", "Cybersecurity", "DevOps", "Flutter", "Android Development", "iOS Development"
+    ],
+    "projects": [
+        "developed", "built", "created", "designed", "engineered", "implemented",
+        "prototyped", "deployed", "optimized", "integrated", "customized",
+        "automated", "tested", "refactored", "launched", "scaled"
+    ]
+}
