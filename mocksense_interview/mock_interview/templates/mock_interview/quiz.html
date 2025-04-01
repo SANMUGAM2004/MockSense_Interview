@@ -3,160 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Interview - Quiz</title>
-    <style>
-        /* Style for the camera feed */
-        #camera-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 300px;
-            height: 220px;
-            border: 2px solid black;
-            background: black;
-        }
-        video {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-    <script>
-        let questionIndex = 0;
-        let questions = [];
-        let interviewStarted = false;
-
-        // Get CSRF Token
-        function getCSRFToken() {
-            let csrfToken = null;
-            const csrfCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrftoken='));
-            if (csrfCookie) {
-                csrfToken = csrfCookie.split('=')[1];
-            }
-            return csrfToken;
-        }
-
-        // Start the Interview
-        function startInterview() {
-            fetch("/mock_interview/start/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "started") {
-                    questions = data.questions;  // Store questions
-                    interviewStarted = true;
-                    startEmotionDetection();  // Start emotion detection camera
-                    showNextQuestion();
-                }
-            });
-        }
-
-        // Show the next question
-        function showNextQuestion() {
-            if (questionIndex < questions.length) {
-                const questionText = questions[questionIndex];
-                document.getElementById("question").innerText = questionText;
-                
-                // Speak the question using text-to-speech
-                speakQuestion(questionText);
-
-                // Listen for user's answer
-                listenToAnswer(questionIndex);
-
-                questionIndex++;
-            } else {
-                document.getElementById("question").innerText = "Interview complete!";
-            }
-        }
-
-        // Convert Text to Speech
-        function speakQuestion(text) {
-            const speech = new SpeechSynthesisUtterance();
-            speech.text = text;
-            speech.volume = 1;
-            speech.rate = 1;
-            speech.pitch = 1;
-            window.speechSynthesis.speak(speech);
-        }
-
-        // Listen and transcribe user’s speech
-        function listenToAnswer(index) {
-            fetch("/mock_interview/listen/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({ duration: 60 })  // Listen for 1 minute
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "completed") {
-                    const userAnswer = data.answer;
-                    console.log("User Answer: ", userAnswer);
-                    saveUserAnswer(index, userAnswer);
-                    setTimeout(showNextQuestion, 2000);  // Wait 2 sec before asking next question
-                }
-            });
-        }
-
-        // Save user's answer
-        function saveUserAnswer(index, answer) {
-            fetch("/mock_interview/save_answer/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({ question_index: index, answer: answer })
-            });
-        }
-
-        // Start Camera for Emotion Detection
-        function startEmotionDetection() {
-            const video = document.createElement("video");
-            video.id = "emotion-video";
-            video.autoplay = true;
-            document.getElementById("camera-container").appendChild(video);
-
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                })
-                .catch(error => {
-                    console.error("Error accessing webcam:", error);
-                });
-
-            setInterval(() => {
-                console.log("Emotion detection running...");
-            }, 5000);  // Simulate emotion detection every 5 sec
-        }
-    </script>
-</head>
-<body>
-    <h1>Mock Interview</h1>
-    <p id="question">Click start to begin your interview.</p>
-    <button onclick="startInterview()">Start Interview</button>
-    <a href="{% url 'mock_interview_result' %}"><button>View Results</button></a>
-
-    <!-- Camera for Emotion Detection -->
-    <div id="camera-container">
-        <img src="/mock_interview/video_feed/" width="300px">
-    </div>
-    
-</body>
-</html> {% endcomment %}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mock Interview</title>
     <style>
         #camera-container {
@@ -317,5 +163,275 @@
     <div id="camera-container">
         <img src="/mock_interview/video_feed/" width="300px">
     </div>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview</title>
+    <style>
+        /* Body Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f0f0f0, #dcdcdc); /* Light gradient background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            margin: 0;
+        }
+
+        /* Title Styling */
+        h1 {
+            color: #4CAF50;
+            font-size: 40px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Question Text Styling */
+        #question {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin: 10px;
+        }
+
+        /* Button Hover Effects */
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.05); /* Slightly enlarge the button when hovered */
+        }
+
+        /* Camera Container Styling */
+        #camera-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            height: 220px;
+            border-radius: 10px;
+            background-color: black;
+            border: 4px solid #4CAF50; /* Green border to match theme */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Video Styling */
+        video {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        /* Styling the camera container for better appearance */
+        #camera-container img {
+            border-radius: 10px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Improve layout for small screens (Responsive Design) */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            #question {
+                font-size: 18px;
+                max-width: 80%;
+            }
+
+            button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+
+            #camera-container {
+                width: 250px;
+                height: 180px;
+            }
+        }
+
+        /* Style for View Results button */
+        a button {
+            background-color: #2196F3;
+        }
+
+        a button:hover {
+            background-color: #1976D2;
+        }
+
+        /* Add a slight shadow to all buttons for depth */
+        button {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Mock Interview</h1>
+    <p id="question">Click start to begin your interview.</p>
+    <button onclick="startInterview()">Start Interview</button>
+    <a href="{% url 'mock_interview_result' %}"><button>View Results</button></a>
+
+    <div id="camera-container">
+        <img src="/mock_interview/video_feed/" width="300px">
+    </div>
+
+    <script>
+        let questionIndex = 0;
+        let questions = [];
+        let interviewStarted = false;
+
+        function getCSRFToken() {
+            let csrfToken = null;
+            const csrfCookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrftoken='));
+            if (csrfCookie) {
+                csrfToken = csrfCookie.split('=')[1];
+            }
+            return csrfToken;
+        }
+
+        // Wait until user answer is recorded before moving to the next question
+        function listenToAnswer(index) {
+            fetch("/mock_interview/listen/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ duration: 5 })  // Listen for 5 seconds
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "completed") {
+                    const userAnswer = data.answer;
+                    console.log("User Answer: ", userAnswer);
+                    saveUserAnswer(index, userAnswer);
+                    
+                    // Move to next question only after recording is done
+                    setTimeout(showNextQuestion, 2000);  
+                }
+            });
+        }
+
+        function startInterview() {
+            fetch("/mock_interview/start/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "started") {
+                    questions = data.questions;
+                    interviewStarted = true;
+                    startEmotionDetection();
+                    showNextQuestion();
+                }
+            });
+        }
+
+        function showNextQuestion() {
+            if (questionIndex < questions.length) {
+                const questionText = questions[questionIndex];
+                document.getElementById("question").innerText = questionText;
+
+                speakQuestion(questionText);
+
+                // Wait for 2 seconds before recording answer
+                setTimeout(() => {
+                    listenToAnswer(questionIndex);
+                }, 2000);
+            } else {
+                document.getElementById("question").innerText = "Interview complete!";
+            }
+        }
+
+        function speakQuestion(text) {
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = text;
+            speech.volume = 1;
+            speech.rate = 1;
+            speech.pitch = 1;
+            window.speechSynthesis.speak(speech);
+        }
+
+        function listenToAnswer(index) {
+            fetch("/mock_interview/listen/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ duration: 5 })  // Listen for 5 seconds
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "completed") {
+                    const userAnswer = data.answer;
+                    console.log("User Answer: ", userAnswer);
+                    saveUserAnswer(index, userAnswer);
+
+                    setTimeout(() => {
+                        questionIndex++;
+                        showNextQuestion();
+                    }, 2000);
+                }
+            });
+        }
+
+        function saveUserAnswer(index, answer) {
+            fetch("/mock_interview/save_answer/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ question_index: index, answer: answer })
+            });
+        }
+
+        function startEmotionDetection() {
+            const video = document.createElement("video");
+            video.id = "emotion-video";
+            video.autoplay = true;
+            document.getElementById("camera-container").appendChild(video);
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error("Error accessing webcam:", error);
+                });
+
+            setInterval(() => {
+                console.log("Emotion detection running...");
+            }, 5000);
+        }
+    </script>
 </body>
 </html>

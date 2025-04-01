@@ -1,21 +1,4 @@
-{% comment %} <!-- mock_interview/templates/mock_interview/index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mock Interview</title>
-</head>
-<body>
-    <h1>Welcome to the Mock Interview</h1>
-    <p>Click below to start your interview.</p>
-    <a href="{% url 'mock_interview_quiz' %}">
-        <button>Start Interview</button>
-    </a>
-</body>
-</html> {% endcomment %}
-
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -51,5 +34,163 @@
                 });
         }
     </script>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .start-btn-container {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 32px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .video-container {
+            margin-top: 20px;
+        }
+
+        #webcam {
+            border-radius: 8px;
+            border: 3px solid #4CAF50;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Notes Section Styling */
+        .notes-box {
+            margin-top: 30px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(75, 192, 192, 0.6), rgba(153, 102, 255, 0.6));
+            border-radius: 10px;
+            font-size: 18px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            width: 60%;
+            text-align: left;
+        }
+
+        .notes-box h2 {
+            color: #000;
+            font-size: 22px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .notes-box p {
+            font-size: 16px;
+            color: #000;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .notes-box h4 {
+            margin: 0;
+            color: #222;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+
+            .notes-box {
+                width: 90%;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to the Mock Interview</h1>
+    <p>Click below to start your interview.</p>
+
+    <div class="start-btn-container">
+        <a href="{% url 'mock_interview_quiz' %}">
+            <button onclick="startInterview()">Start Interview</button>
+        </a>
+    </div>
+
+    {% comment %} <div class="video-container">
+        <video id="webcam" width="640" height="480" autoplay></video>
+    </div> {% endcomment %}
+
+    <!-- Notes Section -->
+    <div class="notes-box">
+        <h2>📝 Important Notes:</h2>
+        <p><h4>1) Wear a Headset: </h4>&nbsp; Ensure you are wearing a headset for better sound quality.</p>
+        <p><h4>2) Speak Louder: </h4>&nbsp; Increase your volume to ensure your voice is clear and audible.</p>
+        <p><h4>3) Speak Clearly: </h4>&nbsp; Articulate your words clearly for better understanding.</p>
+    </div>
+
+    <script>
+        function startInterview() {
+            startCamera();
+        }
+
+        function startCamera() {
+            const video = document.getElementById('webcam');
+            const constraints = { video: true };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.error("Error accessing webcam:", error);
+                });
+        }
+    </script>
+
 </body>
 </html>

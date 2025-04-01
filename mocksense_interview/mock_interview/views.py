@@ -14,17 +14,97 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.conf import settings
 from keras.models import model_from_json
+import sklearn
 import spacy
 from django.core.files.storage import default_storage
 from pdfminer.high_level import extract_text
 from pathlib import Path
+import json
+import random
+import pickle
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Load pre-trained model and tokenizer
+question_generator_path = settings.BASE_DIR / "mock_interview/ML_model/question_generator_rnn.h5"
+model = tf.keras.models.load_model(question_generator_path)
+with open(settings.BASE_DIR / "mock_interview/ML_model/tokenizer.pkl", "rb") as f:
+    tokenizer = pickle.load(f)
+with open(settings.BASE_DIR / "mock_interview/ML_model/label_encoder.pkl", "rb") as f:
+    label_encoder = pickle.load(f)
+    
+# Load intents dataset
+with open(settings.BASE_DIR / "mock_interview/ML_model/data/intents.json", 'r') as file:
+    data = json.load(file)
+
+# Extract max_length from the model's training phase
+max_length = 20  # Make sure this matches the one used in training
+
+# **Function to Generate a Question**
+def generate_question(user_response):
+    # Tokenize and pad user response
+    input_sequence = tokenizer.texts_to_sequences([user_response])
+    input_padded = pad_sequences(input_sequence, maxlen=max_length, padding='post')
+
+    # Predict topic (tag) using the model
+    predicted_index = np.argmax(model.predict(input_padded))
+    predicted_tag = label_encoder.inverse_transform([predicted_index])[0]
+
+    # Mapping questions to responses
+    question_response_map = {}
+    for intent in data['intents']:
+        if intent['tag'] == predicted_tag:
+            for pattern in intent['patterns']:
+                question_response_map[pattern] = intent['responses'][0]  # Assuming one response per tag
+
+    # Select a random question
+    if not question_response_map:
+        return "Sorry, I couldn't determine the topic from your response.", None
+
+    question = random.choice(list(question_response_map.keys()))
+    answer = question_response_map[question]
+    return question, answer
+
+# **Function to Generate 5 Questions**
+def generate_questions_from_resume(resume_json):
+    with open(resume_json, 'r') as file:
+        resume_data = json.load(file)
+
+    skills = resume_data.get("Skills", [])
+    projects = resume_data.get("Projects", [])
+
+    # Combine both skills and projects to generate questions
+    topics = skills + projects
+    if len(topics) < 5:
+        topics = topics * (5 // len(topics) + 1)  # Duplicate if less than 5
+
+    topics = topics[:5]  # Ensure only 5 topics are used
+
+    questions_answers = []
+    for topic in topics:
+        question, answer = generate_question(topic)
+        questions_answers.append({"question": question, "answer": answer})
+
+    return questions_answers
+
+# # **Usage Example**
+# resume_file = "resume_data.json"
+# questions_with_answers = generate_questions_from_resume(resume_file)
+
+# **Print Questions & Answers**
+# for idx, qa in enumerate(questions_with_answers, 1):
+#     print(f"Q{idx}: {qa['question']}")
+#     print(f"A{idx}: {qa['answer']}\n")
+# ================================================================================================
 
 # Load spaCy model
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_lg")
 
 # Load Emotion Detection Model
 emotion_model_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.json"
 emotion_weights_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.h5"
+
 
 with open(emotion_model_path, "r") as json_file:
     emotion_model = model_from_json(json_file.read())
@@ -55,7 +135,7 @@ quote_display_time = None
 current_quote = None
 
 # Load keywords for skills & projects
-with open(settings.BASE_DIR / "mock_interview/ML_model/keywords.json", "r") as file:
+with open(settings.BASE_DIR / "mock_interview/ML_model/data/keywords.json", "r") as file:
     keywords = json.load(file)
 
 #  Load questions from JSON file
@@ -117,34 +197,6 @@ def listen_answer(request):
                 return JsonResponse({"status": "error", "message": "Speech recognition API unavailable"})
     
     return JsonResponse({"error": "Invalid request"}, status=400)
-
-# Set up logging
-logger = logging.getLogger(__name__)
-
-def mock_interview_result(request):
-    """Reads the stored answers from user_answers.json"""
-    # Define the file path
-    file_path = os.path.join(settings.BASE_DIR, "mock_interview", "user_answers.json")
-
-    # Log the file path
-    logger.info(f"Attempting to read answers from: {file_path}")
-
-    # Ensure the file exists before reading it
-    if not os.path.exists(file_path):
-        logger.warning(f"File not found: {file_path}. Creating a new one.")
-        with open(file_path, "w") as file:
-            json.dump([], file)  # Create an empty list if the file doesn't exist
-
-    try:
-        with open(file_path, "r") as file:
-            answers = json.load(file)  # Read JSON data
-        logger.info(f"Answers read successfully: {answers}")
-        return JsonResponse({"answers": answers})
-    except Exception as e:
-        # Log the exception for debugging
-        logger.error(f"Error reading file {file_path}: {e}")
-        return JsonResponse({"error": str(e)}, status=500)
-
 
 # View: Render Quiz Page
 def quiz_view(request):
@@ -222,6 +274,7 @@ def upload_resume(request):
     if request.method == "POST" and request.FILES.get("resume"):
         uploaded_file = request.FILES["resume"]
         file_path = default_storage.save("resumes/" + uploaded_file.name, uploaded_file)
+        print("Resume come for extraction....................")    #Comments
 
         # Extract text from PDF
         resume_text = extract_text(Path(settings.MEDIA_ROOT) / file_path)
@@ -233,7 +286,15 @@ def upload_resume(request):
         json_path = Path(settings.MEDIA_ROOT) / "resume_data.json"
         with open(json_path, "w", encoding="utf-8") as json_file:
             json.dump(parsed_data, json_file, indent=4)
-
+            
+        resume_file = "resume_data.json"
+        questions_with_answers = generate_questions_from_resume(resume_file)
+        # Save generated questions to JSON file
+        save_questions_and_answers(questions_with_answers)
+        # ###################Printing the generated questions.
+        # for idx, qa in enumerate(questions_with_answers, 1):
+        #     print(f"Q{idx}: {qa['question']}")
+        #     print(f"A{idx}: {qa['answer']}\n")
         return JsonResponse(parsed_data, safe=False)
     
     return JsonResponse({"error": "No file uploaded"}, status=400)
@@ -263,3 +324,111 @@ def extract_resume_entities(text):
     extracted_data["Projects"] = [proj.replace("\u2022", "").strip() for proj in projectset]
 
     return extracted_data
+
+
+def save_questions_and_answers(questions_with_answers):
+    """
+    Saves questions to 'question.json' and answers to 'answers.json'.
+    """
+    question_path = settings.BASE_DIR / "mock_interview/ML_model/questions.json"
+    answer_path = settings.BASE_DIR / "mock_interview/ML_model/answers.json"
+
+    # Extract questions and answers
+    questions = [qa["question"] for qa in questions_with_answers]
+    answers = [qa["answer"] for qa in questions_with_answers]
+
+    # Save questions to question.json
+    with open(question_path, "w", encoding="utf-8") as q_file:
+        json.dump({"questions": questions}, q_file, indent=4)
+
+    # Save answers to answers.json
+    with open(answer_path, "w", encoding="utf-8") as a_file:
+        json.dump({"answers": answers}, a_file, indent=4)
+
+    print(f"✅ Questions saved to {question_path}")
+    print(f"✅ Answers saved to {answer_path}")
+    
+    #===================================================================
+
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
+# Function to load correct answers
+def load_correct_answers(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)  # Load JSON file
+            if isinstance(data, dict) and "answers" in data:
+                return data["answers"]  # Extract and return the answers list
+            else:
+                logger.error("❌ Invalid format: Expected a dictionary with 'answers' key")
+                return []
+    except FileNotFoundError:
+        logger.error(f"❌ File not found: {file_path}")
+        return []
+    except json.JSONDecodeError as e:
+        logger.error(f"❌ JSON decoding error in {file_path}: {e}")
+        return []
+
+# Function to load user answers
+def load_user_answers(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)  # Load entire JSON array
+            if isinstance(data, list):
+                return [entry["answer"] for entry in data if "answer" in entry]  # Extract user answers
+            else:
+                logger.error("❌ Invalid format: Expected a list of dictionaries")
+                return []
+    except FileNotFoundError:
+        logger.error(f"❌ File not found: {file_path}")
+        return []
+    except json.JSONDecodeError as e:
+        logger.error(f"❌ JSON decoding error in {file_path}: {e}")
+        return []
+
+# Function to calculate similarity using spaCy
+def calculate_similarity(answer, user_answer):
+    doc1 = nlp(answer)
+    doc2 = nlp(user_answer)
+    return doc1.similarity(doc2)
+
+# Function to process interview results
+def mock_interview_result(request):
+    # Read the content from the text file
+    with open(settings.BASE_DIR / "mock_interview/user_answers.json", 'r') as file:
+        lines = file.readlines()
+
+    # Strip each line of leading/trailing whitespace
+    json_array = [line.strip() for line in lines]
+
+    # Wrap the entire result in square brackets and join without a trailing comma
+    formatted_json = f"[{', '.join(json_array)}]"
+
+    # Save the formatted content to a new file
+    with open(settings.BASE_DIR / "mock_interview/user_answers.json", 'w') as output_file:
+        output_file.write(formatted_json)
+
+    # Load correct answers and user answers
+    correct_answers = load_correct_answers(settings.BASE_DIR / "mock_interview/ML_model/answers.json")
+    user_answers = load_user_answers(settings.BASE_DIR / "mock_interview/user_answers.json")
+
+    # print("✅ Correct Answers:", correct_answers)
+    # print("✅ User Answers:", user_answers)
+
+    if not correct_answers or not user_answers:
+        return render(request, "result.html", {"error": "Missing answer files or invalid data format!"})
+
+    # Compute similarity scores
+    similarity_scores = [calculate_similarity(ca, ua) for ca, ua in zip(correct_answers, user_answers)]
+    overall_score = np.mean(similarity_scores) * 100  # Convert to percentage
+
+    # Prepare data for chart
+    result_data = {
+        "similarity_scores": [round(score * 100, 2) for score in similarity_scores],  # Convert to percentage
+        "overall_score": round(overall_score, 2)
+    }
+    print("📊 Result Data:", result_data)
+
+    return render(request, "mock_interview/result.html", {"result_data": result_data})
