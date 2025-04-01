@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
 <head>
     <title>Quiz Questions</title>
@@ -20,5 +20,127 @@
         
         <button type="submit" name="action" value="next">Next</button>
     </form>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aptitude Quiz | Question</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .options label {
+            display: block;
+            background: white;
+            border: 2px solid #4CAF50;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px auto;
+            width: 100%;
+            max-width: 400px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .options input {
+            display: none;
+        }
+
+        /* Highlight selected option */
+        .options label.selected {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Aptitude Quiz</h1>
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="question-box">
+                <p><strong>Q{{ question_counter }}: {{ question.question }}</strong></p>
+            </div>
+
+            <div class="options">
+                {% for option in question.options %}
+                    <label>
+                        <input type="radio" name="answer" value="{{ option }}" required onclick="selectOption(this)">
+                        {{ option }}
+                    </label>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" name="action" value="next">Next ➡️</button>
+        </form>
+    </div>
+
+    <script>
+        function selectOption(input) {
+            // Remove 'selected' class from all labels
+            document.querySelectorAll('.options label').forEach(label => {
+                label.classList.remove('selected');
+            });
+
+            // Add 'selected' class to the clicked option
+            if (input.checked) {
+                input.parentElement.classList.add('selected');
+            }
+        }
+    </script>
 </body>
 </html>

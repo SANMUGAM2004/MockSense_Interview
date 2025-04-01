@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html>
 <head>
     <title>Quiz Result</title>
@@ -52,5 +52,117 @@
     <form action="{% url 'quiz_view' %}" method="get">
         <button type="submit" class="try-again-btn">Try Again</button>
     </form>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .result-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            margin: 0 auto;
+        }
+
+        .thumbs-up {
+            font-size: 50px;
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+
+        .message {
+            font-size: 20px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 32px;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        .next-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .try-again-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        .try-again-btn:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 768px) {
+            .result-container {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1>Quiz Results</h1>
+        <p class="score">You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong>.</p>
+        <p>Percentage: <strong>{{ percentage|floatformat:2 }}%</strong></p>
+
+        <div class="thumbs-up">
+            👍
+        </div>
+
+        <p class="message"><strong>Improve Yourself!!</strong></p>
+
+        <!-- Next button to move to the mock interview stage -->
+        <a href="{% url 'resume_uploading' %}" class="btn next-btn">Next</a>
+
+        <!-- Optional: You can keep the Try Again button as well -->
+        <form action="{% url 'quiz_view' %}" method="get">
+            <button type="submit" class="btn try-again-btn">Try Again</button>
+        </form>
+    </div>
 </body>
 </html>
