@@ -1,15 +1,19 @@
 {
-    "Name": "Flask",
+    "Name": "Mohamed Fayash N",
     "Skills": [
-        "DevOps",
-        "AWS",
-        "Django",
-        "Python",
-        "Flask",
         "AI",
-        "Java"
+        "Django",
+        "Express.js",
+        "Machine Learning",
+        "Java",
+        "React",
+        "Python"
     ],
     "Projects": [
-        "Automated Evaluation with AWS: Use AWS services like S3, Lambda, and SageMaker to automatically"
+        "Developed competence in backend development using Express.js to manage routing, middleware, and database",
+        "Deployed the application on Netlify, ensuring optimized performance and accessibility.",
+        "Developed  a  project-sharing  website  using  the  MERN  stack,  enabling  students  from  various  institutions  to",
+        "Built a responsive video streaming app using React, Vite, and Material-UI, integrated with RapidAPI's YouTube v3",
+        "Implemented  project  submission,  browsing,  searching,  and  user  authentication,  allowing  students  to"
     ]
 }
