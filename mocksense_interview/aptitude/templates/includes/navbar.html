@@ -14,7 +14,6 @@
       Logout
     </button>
   {% else %}
-    <!-- Toast Notification Container -->
     <div class="custom-toast-container">
       <div id="authToast" class="custom-toast">
         <div class="custom-toast-body">
@@ -44,39 +43,103 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+    video {
+      display: none;
+    }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@latest"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.addEventListener('contextmenu', e => e.preventDefault());
-      document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) &&
-            ['c', 'v', 'x', 'u', 's'].includes(e.key.toLowerCase())) {
-          e.preventDefault();
-        }
+    let tabSwitchCount = 0;
+    let shouldTerminate = false;
+    let streamRef = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // --- Anti-inspection & copy prevention ---
+      document.addEventListener("contextmenu", e => e.preventDefault());
+      document.addEventListener("keydown", e => {
+        if ((e.ctrlKey || e.metaKey) && ['c','v','x','u','s'].includes(e.key.toLowerCase())) e.preventDefault();
         if (e.key === 'F12') e.preventDefault();
       });
-      document.addEventListener('copy', e => e.preventDefault());
-      document.addEventListener('paste', e => e.preventDefault());
+      document.addEventListener("copy", e => e.preventDefault());
+      document.addEventListener("paste", e => e.preventDefault());
+
+      // --- Tab Switch Monitoring ---
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          tabSwitchCount++;
+          if (tabSwitchCount >= 3) {
+            shouldTerminate = true;
+          } else {
+            alert("⚠️ Switching tabs is not allowed!");
+          }
+        } else if (shouldTerminate) {
+          window.location.href = "{% url 'limit_exceeded' %}?reason=tab";
+        }
+      });
+
+      // --- Avoid re-asking for camera access on every page ---
+      if (localStorage.getItem("camera_initialized") === "true") return;
+
+      try {
+        // Setup hidden video
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        // Request camera access
+        streamRef = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = streamRef;
+
+        // Load model and set camera init flag
+        const model = await blazeface.load();
+        localStorage.setItem("camera_initialized", "true");
+
+        const runDetectionLoop = async () => {
+          if (video.readyState === 4) {
+            const faces = await model.estimateFaces(video, false);
+            if (faces.length > 1) {
+              let count = parseInt(localStorage.getItem("face_violations") || "0") + 1;
+              localStorage.setItem("face_violations", count);
+              if (count >= 3) {
+                window.location.href = "{% url 'limit_exceeded' %}?reason=face";
+              } else {
+                alert("⚠️ Multiple faces detected!");
+              }
+            }
+          }
+          requestAnimationFrame(runDetectionLoop);
+        };
+
+        runDetectionLoop();
+
+      } catch (err) {
+        console.warn("Camera access error:", err);
+
+        if (!localStorage.getItem("camera_alerted")) {
+          localStorage.setItem("camera_alerted", "true");
+          alert("🚫 Camera access is required. Please allow access and reload the page.");
+        }
+
+        // Disable all inputs
+        document.querySelectorAll('input, button, select, textarea').forEach(el => {
+          el.disabled = true;
+          el.style.cursor = 'not-allowed';
+          el.style.opacity = '0.5';
+        });
+      }
     });
 
-let tabSwitchCount = 0;
-let shouldTerminate = false;
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    tabSwitchCount++;
-
-    if (tabSwitchCount >= 3) {
-      shouldTerminate = true;
-    } else {
-      alert("⚠️ Switching tabs is not allowed!");
-    }
-  } else if (!document.hidden && shouldTerminate) {
-    // User came back to the tab, now show alert and redirect after they click OK
-    window.location.href = "{% url 'limit_exceeded' %}";
-  }
-});
-
+    // Optional: Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (streamRef) {
+        streamRef.getTracks().forEach(track => track.stop());
+      }
+    });
   </script>
 {% endif %}
 
@@ -147,6 +210,11 @@ document.addEventListener("visibilitychange", () => {
         })
         .then(response => {
           if (response.ok) {
+            // ✅ Clear localStorage on logout
+            localStorage.removeItem("camera_initialized");
+            localStorage.removeItem("face_violations");
+            localStorage.removeItem("camera_alerted");
+
             document.getElementById("logoutToastContainer").style.display = "block";
             setTimeout(() => {
               window.location.href = "{% url 'login' %}";

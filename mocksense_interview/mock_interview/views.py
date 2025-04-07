@@ -395,7 +395,11 @@ def calculate_similarity(answer, user_answer):
     return doc1.similarity(doc2)
 
 def limit_exceeded(request):
-    return render(request, "limit_exceeded.html", {"proctored": True})
+    reason = request.GET.get('reason', 'tab')  # e.g., "tab" or "face"
+    return render(request, "limit_exceeded.html", {
+        "proctored": True,
+        "reason": reason
+    })
 
 # Function to process interview results
 def mock_interview_result(request):

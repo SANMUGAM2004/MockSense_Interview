@@ -1,7 +1,6 @@
 import json
 import random
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
 import os
 
 # Load questions from JSON
@@ -56,7 +55,7 @@ def quiz_questions(request):
 
     current_question = questions[current_question_index]
     
-    # Handle form submission (answering a question)
+    # Handle form submission 
     if request.method == "POST":
         user_answer = request.POST.get("answer")
         if user_answer:
