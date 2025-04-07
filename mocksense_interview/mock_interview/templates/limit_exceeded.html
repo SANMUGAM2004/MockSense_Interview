@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Terminated</title>
+    <style>
+        body {
+            background-color: #fdf2f2;
+            font-family: Arial, sans-serif;
+            color: #b91c1c;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .box {
+            background: #fff;
+            border: 2px solid #b91c1c;
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-top: 0;
+        }
+
+        .loader {
+            margin-top: 20px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #b91c1c;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🚫 Test Terminated</h1>
+        <p>You switched tabs multiple times, which is not allowed during this test.<br>
+        You are being logged out for violating the rules.</p>
+        <div class="loader"></div>
+    </div>
+
+    <form id="logoutForm" method="POST" action="{% url 'logout' %}" style="display: none;">
+        {% csrf_token %}
+    </form>
+
+    <script>
+        setTimeout(() => {
+            // Submit logout form after 3 seconds
+            document.getElementById("logoutForm").submit();
+        }, 3000);
+
+        // After logout, redirect to login
+        setTimeout(() => {
+            window.location.href = "{% url 'login' %}";
+        }, 4000);
+    </script>
+</body>
+</html>

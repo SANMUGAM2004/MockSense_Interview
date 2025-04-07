@@ -36,6 +36,51 @@
   </div>
 </div>
 
+{% if proctored %}
+  <style>
+    body, * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) &&
+            ['c', 'v', 'x', 'u', 's'].includes(e.key.toLowerCase())) {
+          e.preventDefault();
+        }
+        if (e.key === 'F12') e.preventDefault();
+      });
+      document.addEventListener('copy', e => e.preventDefault());
+      document.addEventListener('paste', e => e.preventDefault());
+    });
+
+let tabSwitchCount = 0;
+let shouldTerminate = false;
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    tabSwitchCount++;
+
+    if (tabSwitchCount >= 3) {
+      shouldTerminate = true;
+    } else {
+      alert("⚠️ Switching tabs is not allowed!");
+    }
+  } else if (!document.hidden && shouldTerminate) {
+    // User came back to the tab, now show alert and redirect after they click OK
+    window.location.href = "{% url 'limit_exceeded' %}";
+  }
+});
+
+  </script>
+{% endif %}
+
+
 <!-- Custom Toast Styles -->
 <style>
   .custom-toast-container {

@@ -73,7 +73,8 @@ def quiz_questions(request):
     
     return render(request, "quiz_questions.html", {
         "question": current_question,
-        "question_counter": current_question_index + 1  # For displaying question number
+        "question_counter": current_question_index + 1,  # For displaying question number
+        "proctored":True
     })
 
 

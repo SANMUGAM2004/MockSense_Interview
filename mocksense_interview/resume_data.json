@@ -1,19 +1,20 @@
 {
     "Name": "Mohamed Fayash N",
     "Skills": [
+        "JavaScript",
+        "Java",
         "AI",
+        "Machine Learning",
+        "Python",
         "Django",
         "Express.js",
-        "Machine Learning",
-        "Java",
-        "React",
-        "Python"
+        "React"
     ],
     "Projects": [
+        "Implemented  project  submission,  browsing,  searching,  and  user  authentication,  allowing  students  to",
         "Developed competence in backend development using Express.js to manage routing, middleware, and database",
         "Deployed the application on Netlify, ensuring optimized performance and accessibility.",
-        "Developed  a  project-sharing  website  using  the  MERN  stack,  enabling  students  from  various  institutions  to",
         "Built a responsive video streaming app using React, Vite, and Material-UI, integrated with RapidAPI's YouTube v3",
-        "Implemented  project  submission,  browsing,  searching,  and  user  authentication,  allowing  students  to"
+        "Developed  a  project-sharing  website  using  the  MERN  stack,  enabling  students  from  various  institutions  to"
     ]
 }

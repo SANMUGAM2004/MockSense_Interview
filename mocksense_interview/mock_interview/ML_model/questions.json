@@ -1,9 +1,9 @@
 {
     "questions": [
+        "What are Threads?",
+        "How do you use Java streams?",
         "What is JavaScript?",
-        "What are the skills required for full-stack development?",
-        "What are one-dimensional arrays?",
-        "What are the applications of VR?",
-        "What is the difference between an interface and an abstract class in Java?"
+        "What is virtual reality (VR)?",
+        "What are lambda functions in Python?"
     ]
 }

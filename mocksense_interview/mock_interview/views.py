@@ -200,7 +200,7 @@ def listen_answer(request):
 
 # View: Render Quiz Page
 def quiz_view(request):
-    return render(request, "mock_interview/quiz.html")
+    return render(request, "mock_interview/quiz.html", {'proctored': True})
 
 # Function: Video Stream Generator
 def generate_frames():
@@ -260,10 +260,10 @@ def video_feed(request):
 
 # View: Render Quiz Page
 def quiz_view(request):
-    return render(request, "mock_interview/quiz.html")
+    return render(request, "mock_interview/quiz.html", {'proctored': True})
 
 def index(request):
-    return render(request,"mock_interview/index.html" )
+    return render(request,"mock_interview/index.html", {"proctored": True} )
 
 def resume_uploading(request):
     return render(request,"mock_interview/resume_upload.html")
@@ -393,6 +393,9 @@ def calculate_similarity(answer, user_answer):
     doc1 = nlp(answer)
     doc2 = nlp(user_answer)
     return doc1.similarity(doc2)
+
+def limit_exceeded(request):
+    return render(request, "limit_exceeded.html", {"proctored": True})
 
 # Function to process interview results
 def mock_interview_result(request):
