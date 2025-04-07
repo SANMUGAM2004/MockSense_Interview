@@ -1,0 +1,45 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  {% for message in messages %}
+    <div class="toast align-items-center text-bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          {{ message }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<h2>Login</h2>
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label>Username</label>
+    <input type="text" name="username" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Password</label>
+    <input type="password" name="password" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Login</button>
+  <p class="mt-2">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+</form>
+
+<!-- Bootstrap Toast JS -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toastElements = document.querySelectorAll('.toast');
+    toastElements.forEach(toastEl => {
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+    });
+  });
+</script>
+
+{% endblock %}

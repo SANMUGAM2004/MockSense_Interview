@@ -1,0 +1,164 @@
+<!-- Auth Button & Toast -->
+<div style="position: fixed; top: 10px; right: 10px; z-index: 1055;">
+  {% if user.is_authenticated %}
+    <button id="logoutBtn"
+       style="
+         background-color: #8B0000;
+         color: white;
+         padding: 8px 16px;
+         border: none;
+         border-radius: 5px;
+         font-weight: bold;
+         cursor: pointer;
+       ">
+      Logout
+    </button>
+  {% else %}
+    <!-- Toast Notification Container -->
+    <div class="custom-toast-container">
+      <div id="authToast" class="custom-toast">
+        <div class="custom-toast-body">
+          <span>User is not authenticated.</span>
+          <button class="custom-toast-close" onclick="closeToast()" aria-label="Close">×</button>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Logout Toast -->
+<div id="logoutToastContainer" style="display:none;" class="custom-toast-container">
+  <div class="custom-toast">
+    <div class="custom-toast-body">
+      <span>You have been logged out.</span>
+      <button class="custom-toast-close" onclick="closeToast()">×</button>
+    </div>
+  </div>
+</div>
+
+{% if proctored %}
+  <style>
+    body, * {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) &&
+            ['c', 'v', 'x', 'u', 's'].includes(e.key.toLowerCase())) {
+          e.preventDefault();
+        }
+        if (e.key === 'F12') e.preventDefault();
+      });
+      document.addEventListener('copy', e => e.preventDefault());
+      document.addEventListener('paste', e => e.preventDefault());
+    });
+
+let tabSwitchCount = 0;
+let shouldTerminate = false;
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    tabSwitchCount++;
+
+    if (tabSwitchCount >= 3) {
+      shouldTerminate = true;
+    } else {
+      alert("⚠️ Switching tabs is not allowed!");
+    }
+  } else if (!document.hidden && shouldTerminate) {
+    // User came back to the tab, now show alert and redirect after they click OK
+    window.location.href = "{% url 'limit_exceeded' %}";
+  }
+});
+
+  </script>
+{% endif %}
+
+
+<!-- Custom Toast Styles -->
+<style>
+  .custom-toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+  }
+
+  .custom-toast {
+    background-color: #07b5ff;
+    color: #000;
+    padding: 0.1rem 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .custom-toast-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .custom-toast-close {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #000;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<!-- Logout Script -->
+<script>
+  function closeToast() {
+    document.getElementById("logoutToastContainer").style.display = "none";
+    window.location.href = "{% url 'login' %}";
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function () {
+        fetch("{% url 'logout' %}", {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Accept": "application/json"
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            document.getElementById("logoutToastContainer").style.display = "block";
+            setTimeout(() => {
+              window.location.href = "{% url 'login' %}";
+            }, 3000);
+          }
+        });
+      });
+    }
+
+    setTimeout(() => {
+      const toast = document.getElementById("authToast");
+      if (toast) closeToast();
+    }, 3000);
+  });
+</script>

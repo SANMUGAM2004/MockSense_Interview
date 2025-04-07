@@ -1,41 +1,3 @@
-{% comment %} <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Uploader</title>
-</head>
-<body>
-    <h2>Upload Your Resume</h2>
-    <form id="resumeForm" enctype="multipart/form-data">
-        <input type="file" id="resume" name="resume" accept=".pdf" required>
-        <button type="submit">Upload</button>
-    </form>
-
-    <p id="message" style="color: green;"></p>
-
-    <script>
-        document.getElementById("resumeForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const formData = new FormData();
-            formData.append("resume", document.getElementById("resume").files[0]);
-
-            fetch("/mock_interview/upload_resume/", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("message").innerText = "✅ Resume successfully uploaded!";
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("message").innerText = "❌ Error uploading resume.";
-            });
-        });
-    </script>
-</body>
-</html> {% endcomment %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -138,6 +100,7 @@
     </style>
 </head>
 <body>
+    {% include 'includes/navbar.html' %}
     <div class="container">
         <h2>Upload Your Resume</h2>
         <form id="resumeForm" enctype="multipart/form-data">

@@ -16,6 +16,8 @@ urlpatterns = [
     path('result/', views.mock_interview_result, name='mock_interview_result'),  # Add this line
     path("upload_resume/", views.upload_resume, name="upload_resume"),
     path("resume_uploading/", views.resume_uploading, name="resume_uploading"),
+    path("limit-exceeded/", views.limit_exceeded, name="limit_exceeded"),
+
     
 ]
 

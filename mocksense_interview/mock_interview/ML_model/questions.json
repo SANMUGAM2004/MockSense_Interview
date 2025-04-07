@@ -1,9 +1,9 @@
 {
     "questions": [
-        "How is Continuous Delivery different from Continuous Integration?",
-        "What is Quick-sort?",
-        "Explain REST architecture in web development.",
-        "Explain list comprehension.",
-        "What is the MEAN stack?"
+        "What are Threads?",
+        "How do you use Java streams?",
+        "What is JavaScript?",
+        "What is virtual reality (VR)?",
+        "What are lambda functions in Python?"
     ]
 }

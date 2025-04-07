@@ -1,27 +1,3 @@
-{% comment %} <!DOCTYPE html>
-<html>
-<head>
-    <title>Quiz Questions</title>
-</head>
-<body>
-    <h1>Aptitude Quiz</h1>
-    <form method="POST">
-        {% csrf_token %}
-        
-        <div>
-            <p><strong>Q{{ question_counter }}: {{ question.question }}</strong></p>
-            {% for option in question.options %}
-                <label>
-                    <input type="radio" name="answer" value="{{ option }}" required>
-                    {{ option }}
-                </label><br>
-            {% endfor %}
-        </div>
-        
-        <button type="submit" name="action" value="next">Next</button>
-    </form>
-</body>
-</html> {% endcomment %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,6 +83,7 @@
     </style>
 </head>
 <body>
+    {% include 'includes/navbar.html' %}
     <div class="container">
         <h1>📝 Aptitude Quiz</h1>
         <form method="POST">
