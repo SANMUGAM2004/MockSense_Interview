@@ -1,12 +1,13 @@
 import json
 import random
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 import os
 
 # Load questions from JSON
 def load_questions():
     try:
-        # Get the absolute path to the JSON file
+        
         base_dir = os.path.dirname(os.path.abspath(__file__))  # Get current app directory
         file_path = os.path.join(base_dir, "data", "questions.json")  # Construct full path
         
@@ -45,37 +46,48 @@ def quiz_view(request):
 
     return render(request, "quiz.html", {"categories": list(data.keys())})
 
-# View to handle question answering
 def quiz_questions(request):
     questions = request.session.get("questions", [])
     current_question_index = request.session.get("current_question_index", 0)
-    
+
     if current_question_index >= len(questions):
-        return redirect("quiz_result")  # All questions have been answered, go to result page
+        return redirect("quiz_result")
 
     current_question = questions[current_question_index]
-    
-    # Handle form submission 
+
     if request.method == "POST":
         user_answer = request.POST.get("answer")
         if user_answer:
-            # Save the answer (you can add logic to store it in the session or database)
             answers = request.session.get("answers", [])
             answers.append({"question": current_question, "user_answer": user_answer})
             request.session["answers"] = answers
 
-            # Move to next question
             current_question_index += 1
             request.session["current_question_index"] = current_question_index
 
-            return redirect("quiz_questions")  # Show next question
-    
+            # ✅  send HX-Redirect header for HTMX
+            if current_question_index >= len(questions):
+                if request.headers.get("HX-Request"):
+                    response = JsonResponse({})
+                    response["HX-Redirect"] = "/apti/quiz-result/"
+                    return response
+                return redirect("quiz_result")
+
+            next_question = questions[current_question_index]
+
+            if request.headers.get("HX-Request"):
+                return render(request, "partials/question_snippet.html", {
+                    "question": next_question,
+                    "question_counter": current_question_index + 1
+                })
+
+            return redirect("quiz_questions")
+
     return render(request, "quiz_questions.html", {
         "question": current_question,
-        "question_counter": current_question_index + 1,  # For displaying question number
-        "proctored":True
+        "question_counter": current_question_index + 1,
+        "proctored": True
     })
-
 
 # View to show quiz result
 def quiz_result(request):

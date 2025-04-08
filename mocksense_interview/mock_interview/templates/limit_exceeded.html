@@ -52,7 +52,7 @@
     <div class="box">
         <h1>🚫 Test Terminated</h1>
       
-        {% if reason == "face" %}
+        {% if reason == "multiple_faces" %}
         <h1>🧑‍💻 Test Terminated - Multiple Faces Detected</h1>
         <p>👀 Our system detected multiple faces during the test.<br>
         This violates the test rules. You are being logged out.</p>
@@ -81,6 +81,14 @@
     </form>
 
     <script>
+        localStorage.removeItem("face_violations");
+        localStorage.removeItem("noface_violations");
+        localStorage.removeItem("camera_initialized");
+        localStorage.removeItem("camera_alerted");
+        localStorage.removeItem("cameraGranted");
+      </script>
+      
+    <script>
         setTimeout(() => {
             // Submit logout form after 3 seconds
             document.getElementById("logoutForm").submit();
@@ -89,7 +97,9 @@
         // After logout, redirect to login
         setTimeout(() => {
             window.location.href = "{% url 'login' %}";
-        }, 4000);
+        }, 7000);
+
+        
     </script>
 </body>
 </html>

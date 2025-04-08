@@ -28,7 +28,7 @@ class RegisterForm(forms.ModelForm):
             if len(username) < 4 or len(username) > 20:
                 raise forms.ValidationError("Username must be between 4 and 20 characters.")
 
-            # Allowed characters: letters, numbers, _, @
+            # Allowed characters: letters, numbers, _ and @
             if not re.match(r'^[A-Za-z0-9_@]+$', username):
                 raise forms.ValidationError("Username can only contain letters, numbers, underscores (_) and at symbols (@).")
 
