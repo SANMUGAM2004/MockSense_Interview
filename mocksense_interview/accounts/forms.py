@@ -6,11 +6,11 @@ import re
 
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         label="Password"
     )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         label="Confirm Password"
     )
 
@@ -19,6 +19,10 @@ class RegisterForm(forms.ModelForm):
         fields = ['username', 'email', 'password']
         help_texts = {
             'username': None,
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
 
     def clean_username(self):
