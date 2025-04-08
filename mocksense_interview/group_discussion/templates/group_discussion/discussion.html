@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -110,25 +110,17 @@
     {% include 'includes/navbar.html' %}
     <h2>Group Discussion</h2>
 
-    <div class="right-container">
-        <video id="videoElement" autoplay></video>
-        <div class="emotion-container">
-            <p id="emotionText">Emotion: Detecting...</p>
-            <p class="quote" id="quoteBox"></p>
-        </div>
-    </div>
+    <h2>Group Discussion</h2>
+
+    <h3>🧠 Topic: {{ topic }}</h3>
+
 
     <div class="container">
         <h2>Group Discussion</h2>
-        <form id="gdForm" method="post">
-            {% csrf_token %}
-            <input type="text" id="topic" placeholder="Enter discussion topic..." required>
-            <button type="button" onclick="startDiscussion()">Start Discussion</button>
-        </form>
+        
         <div class="messages" id="messages"></div>
         <button onclick="startSpeechRecognition()">🎤 Speak Your Response</button>
         <p id="recording-status"></p>
-        <input type="text" id="userResponse" placeholder="Your response..." required>
         <button onclick="sendResponse()">Send</button>
     </div>
 
@@ -191,6 +183,235 @@
             .catch(error => console.error("Error:", error));
         }
         
+    </script>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Discussion</title>
+    <script>
+        let videoStream;
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoStream = stream;
+                    document.getElementById("videoElement").srcObject = stream;
+                    setInterval(captureImage, 3000);  
+                })
+                .catch(error => console.error("Error accessing webcam:", error));
+        }
+
+        function captureImage() {
+            let video = document.getElementById("videoElement");
+            let canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            let ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            let imageData = canvas.toDataURL("image/jpeg");
+            sendImageForEmotionDetection(imageData);
+        }
+
+        function sendImageForEmotionDetection(imageData) {
+            fetch("/group_discussion/detect_emotion/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "image": imageData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("emotionText").innerText = `Emotion: ${data.emotion}`;
+                if (data.quote) showQuote(data.quote);
+            })
+            .catch(error => console.error("Error detecting emotion:", error));
+        }
+
+        function showQuote(quote) {
+            let quoteBox = document.getElementById("quoteBox");
+            quoteBox.innerText = quote;
+            quoteBox.style.display = "block";
+            setTimeout(() => {
+                quoteBox.style.display = "none";
+            }, 7000);
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        window.onload = startCamera;
+        window.onbeforeunload = stopCamera;
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .right-container {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        video {
+            width: 180px;
+            height: auto;
+            border: 2px solid black;
+            border-radius: 10px;
+        }
+        .emotion-container {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            width: 220px;
+        }
+        .quote {
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 5px;
+            color: yellow;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .message.user { color: green; }
+        .message.ai { color: blue; }
+    </style>
+</head>
+<body>
+    {% include 'includes/navbar.html' %}
+    <h2>Group Discussion</h2>
+
+    <div class="right-container">
+        <video id="videoElement" autoplay></video>
+        <div class="emotion-container">
+            <p id="emotionText">Emotion: Detecting...</p>
+            <p class="quote" id="quoteBox"></p>
+        </div>
+    </div>
+
+    <h3>🧠 Topic: {{ topic }}</h3>
+
+    <div class="container">
+        <div class="messages" id="messages"></div>
+        <p id="recording-status"></p>
+    </div>
+
+    <script>
+        const malePoints = {{ male_points|safe }};
+        const femalePoints = {{ female_points|safe }};
+        const topic = `{{ topic }}`;
+
+        let currentRound = 0;
+        const totalRounds = 5;
+        const userResponses = [];
+
+        function getCSRFToken() {
+            let csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            return csrfToken ? csrfToken.value : "";
+        }
+
+        function speakText(text, voiceType, callback) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = speechSynthesis.getVoices();
+            utterance.voice = voices.find(voice => voice.name.toLowerCase().includes(voiceType.toLowerCase())) || voices[0];
+            utterance.rate = 1;
+            utterance.onend = callback;
+            speechSynthesis.speak(utterance);
+        }
+
+        async function startDiscussionRounds() {
+            if (currentRound >= totalRounds) {
+                await sendAllResponsesToServer();
+                alert("Discussion completed! 🎤✅");
+                window.location.href = "/group_discussion/result/";
+                return;
+            }
+
+            const malePoint = malePoints[currentRound] || "";
+            const femalePoint = femalePoints[currentRound] || "";
+
+            document.getElementById("messages").innerHTML += `<p><b>Round ${currentRound + 1}</b></p>`;
+            document.getElementById("messages").innerHTML += `<p class="message ai"><b>AI Male:</b> ${malePoint}</p>`;
+
+            speakText(malePoint, "male", () => {
+                document.getElementById("messages").innerHTML += `<p class="message ai"><b>AI Female:</b> ${femalePoint}</p>`;
+                speakText(femalePoint, "female", () => {
+                    startUserRecording();
+                });
+            });
+        }
+
+        function startUserRecording() {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            document.getElementById("recording-status").innerText = "🎤 Listening...";
+
+            recognition.start();
+
+            const listenDuration = 10000;
+            const stopListening = () => recognition.stop();
+            setTimeout(stopListening, listenDuration);
+
+            recognition.onresult = function(event) {
+                const userSpeech = event.results[0][0].transcript;
+                userResponses.push({ round: currentRound + 1, response: userSpeech });
+                document.getElementById("messages").innerHTML += `<p class="message user"><b>You:</b> ${userSpeech}</p>`;
+                document.getElementById("recording-status").innerText = "";
+                currentRound++;
+                setTimeout(startDiscussionRounds, 2000);
+            };
+
+            recognition.onerror = function(event) {
+                document.getElementById("recording-status").innerText = "❌ Error during speech recognition.";
+                userResponses.push({ round: currentRound + 1, response: "[Error or No Speech]" });
+                currentRound++;
+                setTimeout(startDiscussionRounds, 2000);
+            };
+        }
+
+        async function sendAllResponsesToServer() {
+            try {
+                const response = await fetch("/group_discussion/save_response/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        topic: topic,
+                        user_responses: userResponses
+                    })
+                });
+                const data = await response.json();
+                console.log("Responses saved:", data);
+            } catch (error) {
+                console.error("Error saving responses:", error);
+            }
+        }
+
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                speechSynthesis.onvoiceschanged = () => startDiscussionRounds();
+                if (speechSynthesis.getVoices().length > 0) startDiscussionRounds();
+            }, 2000);
+        });
     </script>
 </body>
 </html>

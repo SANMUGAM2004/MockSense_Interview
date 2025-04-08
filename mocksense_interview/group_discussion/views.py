@@ -191,6 +191,8 @@ from keras.models import model_from_json
 from dotenv import load_dotenv
 from gtts import gTTS
 import logging
+from django.conf import settings
+BASE_DIR = settings.BASE_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -290,12 +292,191 @@ def detect_emotion(request):
 
 def discussion_view(request):
     """Render the Group Discussion Page."""
-    return render(request, "group_discussion/discussion.html")
+    return render(request, "group_discussion/index.html")
 
+# def grp_discussion_view(request):
+#     """Render the Group Discussion Page."""
+#     return render(request, "group_discussion/discussion.html")
+GEMINI_API_KEY = "AIzaSyCUUmAWPdNRByj4hAtHntFZbZizGXuojVc"
+# GEMINI_API_KEY = "acac"
+# Configure Gemini
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel("models/gemini-1.5-pro")
+
+def start_grp_discussion_view(request):
+    """Render the Group Discussion Page with generated topic and discussion."""
+
+    # prompt = (
+    #     "Generate a random group discussion topic. It can be either a social or technological topic.\n\n"
+    #     "Then, simulate a group discussion between two participants: Male and Female.\n"
+    #     "Each person should respond with 5 professional points.\n"
+    #     "Some points can be in agreement, others can respectfully oppose.\n"
+    #     "The tone should be formal, insightful, and natural."
+    #     "\n\nProvide your output in the following format:\n"
+    #     "Group Discussion Topic: <Topic>\n\n"
+    #     "Male:\n1. ...\n2. ...\n3. ...\n4. ...\n5. ...\n\n"
+    #     "Female:\n1. ...\n2. ...\n3. ...\n4. ...\n5. ..."
+    # )
+
+    # response = model.generate_content(prompt)
+
+    # # Parse the result
+    # lines = response.text.strip().splitlines()
+    topic = ""
+    male_points = []
+    female_points = []
+    current_speaker = None
+
+    # for line in lines:
+    #     line = line.strip()
+    #     if line.lower().startswith("group discussion topic"):
+    #         topic = line.split(":", 1)[1].strip()
+    #     elif line.lower().startswith("male"):
+    #         current_speaker = "male"
+    #     elif line.lower().startswith("female"):
+    #         current_speaker = "female"
+    #     elif line and line[0].isdigit() and "." in line:
+    #         point = line.split(".", 1)[1].strip()
+    #         if current_speaker == "male":
+    #             male_points.append(point)
+    #         elif current_speaker == "female":
+    #             female_points.append(point)
+
+    # Write the result to response.txt (overwrite if exists)
+    # with open("response.txt", "w", encoding="utf-8") as file:
+    #     file.write(f"Group Discussion Topic: {topic}\n\n")
+    #     file.write("Male:\n")
+    #     for idx, point in enumerate(male_points, 1):
+    #         file.write(f"{idx}. {point}\n")
+    #     file.write("\nFemale:\n")
+    #     for idx, point in enumerate(female_points, 1):
+    #         file.write(f"{idx}. {point}\n")
+
+    # return render(request, "group_discussion/discussion.html", {
+    #     "topic": topic,
+    #     "male_points": male_points,
+    #     "female_points": female_points,
+    # })
+    topic = "The Impact of Artificial Intelligence on the Future of Work"
+    print("=========================",topic,"=============================")
+    return render(request, "group_discussion/brainstorming.html", {"topic": topic})
+
+# def group_discussion_view(request):
+#     return render(request, "group_discussion/discussion.html")
+def group_discussion_view(request):
+    topic = ""
+    male_points = []
+    female_points = []
+    
+    # Make sure this path points to where your response.txt is stored
+    file_path = os.path.join(BASE_DIR, "group_discussion", "response.txt")
+
+
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+        current_section = None
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("Group Discussion Topic:"):
+                topic = line.replace("Group Discussion Topic:", "").strip()
+            elif line.startswith("Male:"):
+                current_section = "male"
+            elif line.startswith("Female:"):
+                current_section = "female"
+            elif current_section == "male" and line[0].isdigit():
+                male_points.append(line[line.find('.')+1:].strip())
+            elif current_section == "female" and line[0].isdigit():
+                female_points.append(line[line.find('.')+1:].strip())
+
+    context = {
+        "topic": topic,
+        "male_points": male_points,
+        "female_points": female_points
+    }
+
+    return render(request, "group_discussion/discussion.html", context)
+
+@csrf_exempt
+# def save_user_gd_response(request):
+#     if request.method == "POST":
+#         data = json.loads(request.body)
+#         topic = data.get("topic", "")
+#         responses = data.get("user_responses", [])
+#         # settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.json
+#         response_path = os.path.join(settings.BASE_DIR / "group_discussion", "user_gd_response.txt")
+#         with open(response_path, "w", encoding="utf-8") as file:
+#             file.write(f"Topic: {topic}\n\n")
+#             for item in responses:
+#                 file.write(f"Round {item['round']}: {item['response']}\n")
+
+#         return JsonResponse({"status": "success", "message": "Responses saved."})
+#     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
+def save_user_gd_response(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        topic = data.get("topic", "")
+        responses = data.get("user_responses", [])
+
+        response_path = os.path.join(settings.BASE_DIR / "group_discussion", "user_gd_response.txt")
+        with open(response_path, "w", encoding="utf-8") as file:
+            file.write(f"Topic: {topic}\n\n")
+            for item in responses:
+                file.write(f"Round {item['round']}: {item['response']}\n")
+        print("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+
+        # 🌟 Improve sentences using Gemini
+        try:
+            with open(response_path, "r", encoding="utf-8") as file:
+                user_text = file.read()
+                
+            print("user test is finished===============================================================")
+
+            prompt = f"""Improve the clarity, grammar, and structure of these responses for a group discussion.
+            Return the improved sentences as a bullet list. Don't change the context.
+
+            {user_text}
+            """
+            response = model.generate_content(prompt)
+            improved_sentences = response.text.strip()
+            print("=+++++++++++++++++++++++++++++++++++++++++++++++",response)
+
+            # Save improved output
+            improved_path = os.path.join(settings.BASE_DIR / "group_discussion", "improved_response.txt")
+            with open(improved_path, "w", encoding="utf-8") as file:
+                file.write(improved_sentences)
+
+        except Exception as e:
+            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+        return JsonResponse({"status": "success", "message": "Responses saved and improved."})
+
+    return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
+
+def improve_sentences_view(request):
+    user_path = os.path.join(settings.BASE_DIR / "group_discussion", "user_gd_response.txt")
+    improved_path = os.path.join(settings.BASE_DIR / "group_discussion", "improved_response.txt")
+
+    with open(user_path, "r", encoding="utf-8") as file:
+        user_text = file.read()
+
+    with open(improved_path, "r", encoding="utf-8") as file:
+        improved_sentences = file.read()
+
+    return render(request, "group_discussion/result.html", {
+        "original": user_text,
+        "improved": improved_sentences
+    })
+
+
+# ===========================================================
 # Load API Key
 load_dotenv()
 # GEMINI_API_KEY = "AIzaSyCUUmAWPdNRByj4hAtHntFZbZizGXuojVc"
-GEMINI_API_KEY = "asdf"
+# GEMINI_API_KEY = "asdf"
 
 # GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "asd")  # Default key for testing
 genai.configure(api_key=GEMINI_API_KEY)

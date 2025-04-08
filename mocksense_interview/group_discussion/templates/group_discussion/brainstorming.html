@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Brainstorming</title>
+    <script>
+        let countdown = 10;
+        function updateTimer() {
+            document.getElementById("timer").innerText = countdown;
+            if (countdown === 0) {
+                window.location.href = "{% url 'group_disscussion_view' %}";
+            } else {
+                countdown--;
+                setTimeout(updateTimer, 1000);
+            }
+        }
+        window.onload = updateTimer;
+    </script>
+</head>
+<body>
+    <h1>Group Discussion Topic</h1>
+    <p style="font-size: 24px;"><strong>{{ topic }}</strong></p>
+    <h2>Starting in <span id="timer">10</span> seconds...</h2>
+</body>
+</html>

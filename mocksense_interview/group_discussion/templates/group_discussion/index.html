@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Discussion</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            color: #3f51b5;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .start-btn-container {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #3f51b5;
+            color: white;
+            padding: 15px 32px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2c387e;
+        }
+
+        .notes-box {
+            margin-top: 30px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.3), rgba(156, 39, 176, 0.3));
+            border-radius: 10px;
+            font-size: 18px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            width: 60%;
+            text-align: left;
+        }
+
+        .notes-box h2 {
+            color: #000;
+            font-size: 22px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .notes-box p {
+            font-size: 16px;
+            color: #000;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .notes-box h4 {
+            margin: 0;
+            color: #222;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+
+            .notes-box {
+                width: 90%;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'includes/navbar.html' %}
+
+    <h1>Welcome to Group Discussion</h1>
+    <p>Click below to start your group discussion session.</p>
+
+    <div class="start-btn-container">
+        <a href="{% url 'start_group_discussion' %}">
+            <button>Start Discussion</button>
+        </a>
+    </div>
+
+    <div class="notes-box">
+        <h2>📝 Important Notes:</h2>
+        <p><h4>1) Stay Focused:</h4>&nbsp; Keep your camera on and speak clearly during the discussion.</p>
+        <p><h4>2) Use Headphones:</h4>&nbsp; To avoid echo and background noise.</p>
+        <p><h4>3) Maintain Eye Contact:</h4>&nbsp; Engage with your peers by looking into the camera.</p>
+        <p><h4>4) Be Respectful:</h4>&nbsp; Listen actively and do not interrupt others while speaking.</p>
+    </div>
+</body>
+</html>
