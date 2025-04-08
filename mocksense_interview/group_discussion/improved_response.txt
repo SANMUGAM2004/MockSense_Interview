@@ -1,5 +1,5 @@
-* Round 1: I agree with both of your points. AI has the potential to significantly enhance productivity by automating repetitive tasks.
-* Round 2: Absolutely. Restraining AI programs with ethical guidelines is essential.  We need to invest in education and equip the workforce for the changing job market.
-* Round 3: Algorithmic bias is a critical concern. We need to develop transparent and accountable AI systems and perform thorough evaluations.
-* Round 4: Yes, ethical debates and discussions can facilitate the responsible development of AI.
-* Round 5: Continuous monitoring and regulation are crucial.  Development organizations need to prevent misuse and ensure that AI deployment aligns with societal values.
+* Round 1: No comment. / Pass.
+* Round 2: No comment. / Pass.
+* Round 3: I agree. / That's a good point. / Sounds good.
+* Round 4: I'm finished. / I've completed my thoughts. / My contribution is complete. 
+* Round 5:  Uber is a relevant example. / I'd like to discuss Uber's use of AI. / How does Uber utilize AI?
