@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Improved Responses</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .section { margin-bottom: 30px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h2>📊 Group Discussion Result</h2>
+
+    <div class="section">
+        <h3>📝 Original Responses</h3>
+        <pre>{{ original }}</pre>
+    </div>
+
+    <div class="section">
+        <h3>✅ Improved Sentences</h3>
+        <pre>{{ improved }}</pre>
+    </div>
+
+    <a href="{% url 'discussion' %}">← Back to Home</a>
+</body>
+</html>
