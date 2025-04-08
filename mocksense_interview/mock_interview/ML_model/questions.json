@@ -1,9 +1,9 @@
 {
     "questions": [
-        "Explain sorting algorithms for arrays in computer programming.",
+        "Explain the types of VR systems.",
         "What are JavaScript frameworks?",
-        "What is the difference between front-end and back-end development?",
-        "What is the difference between List and Set in Java?",
-        "Explain Scheduling Algorithms."
+        "What are Python decorators?",
+        "How does MVC work in web development?",
+        "Explain JavaScript data types."
     ]
 }
