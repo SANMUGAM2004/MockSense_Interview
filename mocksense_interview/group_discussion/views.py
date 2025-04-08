@@ -185,7 +185,8 @@ def group_discussion_view(request):
     return render(request, "group_discussion/discussion.html", {
         "topic": topic,
         "male_points": male_points,
-        "female_points": female_points
+        "female_points": female_points,
+        "proctored":True
     })
 
 

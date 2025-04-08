@@ -1,9 +1,9 @@
 {
     "questions": [
-        "Explain the types of VR systems.",
-        "What are JavaScript frameworks?",
-        "What are Python decorators?",
-        "How does MVC work in web development?",
-        "Explain JavaScript data types."
+        "What are Java Collections?",
+        "What are Kernels?",
+        "Explain the key features of Django.",
+        "Explain what a binary search tree is.",
+        "Explain how generators work in Python."
     ]
 }
