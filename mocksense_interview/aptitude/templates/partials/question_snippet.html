@@ -1,0 +1,26 @@
+<div id="quiz-container" class="container">
+    <h1>📝 Aptitude Quiz</h1>
+  
+    <form method="POST"
+          hx-post="{% url 'quiz_questions' %}"
+          hx-target="#quiz-container"
+          hx-swap="outerHTML">
+      {% csrf_token %}
+  
+      <div class="question-box">
+        <p><strong>Q{{ question_counter }}: {{ question.question }}</strong></p>
+      </div>
+  
+      <div class="options">
+        {% for option in question.options %}
+          <label>
+            <input type="radio" name="answer" value="{{ option }}" required onclick="selectOption(this)">
+            {{ option }}
+          </label>
+        {% endfor %}
+      </div>
+  
+      <button type="submit" name="action" value="next">Next ➡️</button>
+    </form>
+  </div>
+  

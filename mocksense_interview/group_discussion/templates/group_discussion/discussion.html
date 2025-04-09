@@ -6,71 +6,74 @@
     <title>Group Discussion</title>
     <script>
         let videoStream;
-        let confusedStartTime = null;
-        let quoteDisplayed = false;
-
+    
         function startCamera() {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {
                     videoStream = stream;
-                    document.getElementById("videoElement").srcObject = stream;
-                    setInterval(captureImage, 3000);  
+    
+                    // Attach to a hidden video element (so face is NOT visible)
+                    const hiddenVideo = document.createElement("video");
+                    hiddenVideo.setAttribute("id", "videoElement");
+                    hiddenVideo.setAttribute("autoplay", true);
+                    hiddenVideo.style.display = "none";
+                    document.body.appendChild(hiddenVideo);
+                    hiddenVideo.srcObject = stream;
+    
+                    // Start emotion detection every 3 seconds
+                    setInterval(captureImage, 3000);
                 })
                 .catch(error => console.error("Error accessing webcam:", error));
         }
-
+    
         function captureImage() {
-            let video = document.getElementById("videoElement");
-            let canvas = document.createElement("canvas");
+            const video = document.getElementById("videoElement");
+            if (!video.videoWidth || !video.videoHeight) return; // avoid empty captures
+            const canvas = document.createElement("canvas");
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            let ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext("2d");
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            let imageData = canvas.toDataURL("image/jpeg");
+            const imageData = canvas.toDataURL("image/jpeg");
             sendImageForEmotionDetection(imageData);
         }
-
+    
         function sendImageForEmotionDetection(imageData) {
-            fetch("/group_discussion/detect_emotion/", {  // ✅ Ensure this matches your Django URL
-                method: "POST",  // ✅ This must be POST
+            fetch("/mock_interview/detect_emotion/", {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ "image": imageData })  // ✅ Ensure JSON data is sent
+                body: JSON.stringify({ "image": imageData })
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Emotion Response:", data);  // ✅ Debug to see emotion output
                 document.getElementById("emotionText").innerText = `Emotion: ${data.emotion}`;
-                if (data.quote) {
-                    showQuote(data.quote);
-                }
+                if (data.quote) showQuote(data.quote);
             })
             .catch(error => console.error("Error detecting emotion:", error));
         }
-        
-
+    
         function showQuote(quote) {
-            let quoteBox = document.getElementById("quoteBox");
+            const quoteBox = document.getElementById("quoteBox");
             quoteBox.innerText = quote;
             quoteBox.style.display = "block";
             setTimeout(() => {
                 quoteBox.style.display = "none";
-                quoteDisplayed = false;
-                confusedStartTime = null; 
             }, 7000);
         }
-
+    
         function stopCamera() {
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
             }
         }
-
+    
+        // Auto start/stop on page load and unload
         window.onload = startCamera;
         window.onbeforeunload = stopCamera;
     </script>
+    
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-
         .right-container {
             position: fixed;
             top: 10px;
@@ -80,14 +83,12 @@
             align-items: center;
             gap: 10px;
         }
-
         video {
             width: 180px;
             height: auto;
             border: 2px solid black;
             border-radius: 10px;
         }
-
         .emotion-container {
             background: rgba(0, 0, 0, 0.7);
             color: white;
@@ -97,100 +98,198 @@
             text-align: center;
             width: 220px;
         }
-
         .quote {
             font-style: italic;
             font-size: 16px;
             margin-top: 5px;
             color: yellow;
         }
+        .container {
+            margin-top: 30px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .message.user { color: green; }
+        .message.ai { color: blue; }
     </style>
 </head>
 <body>
     {% include 'includes/navbar.html' %}
     <h2>Group Discussion</h2>
 
+
     <div class="right-container">
-        <video id="videoElement" autoplay></video>
-        <div class="emotion-container">
+        <div class="emotion-container" style="position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.75); color: white; padding: 12px; border-radius: 10px; width: 240px;">
             <p id="emotionText">Emotion: Detecting...</p>
-            <p class="quote" id="quoteBox"></p>
-        </div>
+            <p class="quote" id="quoteBox" style="display:none; color: yellow; font-style: italic;"></p>
+        </div>        
     </div>
 
+    <h3>🧠 Topic: {{ topic }}</h3>
+
     <div class="container">
-        <h2>Group Discussion</h2>
-        <form id="gdForm" method="post">
-            {% csrf_token %}
-            <input type="text" id="topic" placeholder="Enter discussion topic..." required>
-            <button type="button" onclick="startDiscussion()">Start Discussion</button>
-        </form>
         <div class="messages" id="messages"></div>
-        <button onclick="startSpeechRecognition()">🎤 Speak Your Response</button>
         <p id="recording-status"></p>
-        <input type="text" id="userResponse" placeholder="Your response..." required>
-        <button onclick="sendResponse()">Send</button>
     </div>
 
     <script>
+        const malePoints = {{ male_points|safe }};
+        const femalePoints = {{ female_points|safe }};
+        const topic = `{{ topic }}`;
+    
+        let currentRound = 0;
+        const totalRounds = 3;
+        const userResponses = [];
+    
         function getCSRFToken() {
             let csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
             return csrfToken ? csrfToken.value : "";
         }
+    
+        function waitForVoices(callback) {
+    let voices = speechSynthesis.getVoices();
+    if (voices.length !== 0) {
+        callback();
+    } else {
+        let interval = setInterval(() => {
+            voices = speechSynthesis.getVoices();
+            if (voices.length !== 0) {
+                clearInterval(interval);
+                callback();
+            }
+        }, 100);
+    }
+}
 
-        function startDiscussion() {
-            const topic = document.getElementById("topic").value;
-            document.getElementById("messages").innerHTML = `<p><b>Topic:</b> ${topic}</p>`;
+    
+        function speakText(text, voiceType, callback) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+
+    console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
+
+    let selectedVoice = null;
+
+    // Pick a more reliable male/female voice
+    if (voiceType === "male") {
+        selectedVoice = voices.find(voice =>
+            voice.name.toLowerCase().includes("male") ||
+            voice.name.toLowerCase().includes("daniel") ||
+            voice.name.toLowerCase().includes("google us english")
+        );
+    } else if (voiceType === "female") {
+        selectedVoice = voices.find(voice =>
+            voice.name.toLowerCase().includes("female") ||
+            voice.name.toLowerCase().includes("susan") ||
+            voice.name.toLowerCase().includes("zira") ||
+            voice.name.toLowerCase().includes("google uk english")
+        );
+    }
+
+    // Fallback if nothing found
+    utterance.voice = selectedVoice || voices[0];
+    utterance.rate = 1;
+
+    utterance.onend = () => {
+        console.log(`✅ Finished speaking (${voiceType}):`, text);
+        callback();
+    };
+
+    utterance.onerror = (e) => {
+        console.error(`❌ Speech error (${voiceType}):`, e);
+        callback(); // Fallback: still move on
+    };
+
+    console.log(`🔊 Speaking (${voiceType}):`, text, "| Voice:", utterance.voice?.name);
+    speechSynthesis.speak(utterance);
+}
+
+    
+        async function startDiscussionRounds() {
+            if (currentRound >= totalRounds) {
+                await sendAllResponsesToServer();
+                alert("Discussion completed! 🎤✅");
+                window.location.href = "/group_discussion/result/";
+                return;
+            }
+    
+            const malePoint = malePoints[currentRound] || "";
+            const femalePoint = femalePoints[currentRound] || "";
+    
+            document.getElementById("messages").innerHTML += `<p><b>Round ${currentRound + 1}</b></p>`;
+            document.getElementById("messages").innerHTML += `<p class="message ai"><b>Aurthur:</b> ${malePoint}</p>`;
+    
+            speakText(malePoint, "male", () => {
+                document.getElementById("messages").innerHTML += `<p class="message ai"><b>Sadie:</b> ${femalePoint}</p>`;
+                speakText(femalePoint, "female", () => {
+                    startUserRecording();
+                });
+            });
         }
-
-        function startSpeechRecognition() {
+    
+        function startUserRecording() {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            document.getElementById("recording-status").innerText = "🎤 Listening...";
+
             recognition.start();
-            document.getElementById("recording-status").textContent = "Recording... 🎤";
+
+            const listenDuration = 10000;
+            const stopListening = () => recognition.stop();
+            setTimeout(stopListening, listenDuration);
+
             recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById("userResponse").value = transcript;
-                document.getElementById("recording-status").textContent = "";
+                const userSpeech = event.results[0][0].transcript;
+                userResponses.push({ round: currentRound + 1, response: userSpeech });
+                document.getElementById("messages").innerHTML += `<p class="message user"><b>You:</b> ${userSpeech}</p>`;
+                document.getElementById("recording-status").innerText = "";
+                currentRound++;
+                setTimeout(startDiscussionRounds, 2000);
             };
-            recognition.onerror = function() {
-                document.getElementById("recording-status").textContent = "Error in speech recognition.";
+
+            recognition.onerror = function(event) {
+                document.getElementById("recording-status").innerText = "❌ Error during speech recognition.";
+                userResponses.push({ round: currentRound + 1, response: "[Error or No Speech]" });
+                currentRound++;
+                setTimeout(startDiscussionRounds, 2000);
             };
         }
 
-        function speak(text, voiceType) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            const voices = speechSynthesis.getVoices();
-            utterance.voice = voices.find(voice => voice.name.includes(voiceType)) || voices[0];
-            utterance.rate = 1;
-            speechSynthesis.speak(utterance);
-        }
 
-        function sendResponse() {
-            const userResponse = document.getElementById("userResponse").value;
-            if (!userResponse.trim()) return;
-            const topic = document.getElementById("topic").value;
-            const messagesDiv = document.getElementById("messages");
-            messagesDiv.innerHTML += `<p class="message user"><b>You:</b> ${userResponse}</p>`;
-            document.getElementById("userResponse").value = "";
-            fetch("/gd/", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken()
-                },
-                body: JSON.stringify({ "topic": topic, "user_response": userResponse })
-            })
-            .then(response => response.json())
-            .then(data => {
-                messagesDiv.innerHTML += `<p class="message ai"><b>AI Male:</b> ${data.ai_male}</p>`;
-                messagesDiv.innerHTML += `<p class="message ai"><b>AI Female:</b> ${data.ai_female}</p>`;
-                speak(data.ai_male, "Male");
-                speak(data.ai_female, "Female");
-            })
-            .catch(error => console.error("Error:", error));
+    
+        async function sendAllResponsesToServer() {
+            try {
+                const response = await fetch("/group_discussion/save_response/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        topic: topic,
+                        user_responses: userResponses
+                    })
+                });
+                const data = await response.json();
+                console.log("Responses saved:", data);
+            } catch (error) {
+                console.error("Error saving responses:", error);
+            }
         }
-        
+    
+        // ✅ Wait for voices before beginning the discussion
+        window.addEventListener("load", () => {
+            waitForVoices(() => {
+                console.log("✅ Voices loaded. Starting discussion.");
+                startDiscussionRounds();
+            });
+        });
     </script>
+    
 </body>
 </html>

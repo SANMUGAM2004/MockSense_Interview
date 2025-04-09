@@ -1,11 +1,93 @@
 {% extends 'accounts/base.html' %}
 {% block title %}Register{% endblock %}
 {% block content %}
+
 <h2>Register</h2>
-<form method="post">
+<form method="post" novalidate>
   {% csrf_token %}
-  {{ form.as_p }}
+
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    {% for error in form.non_field_errors %}
+      {{ error }}
+    {% endfor %}
+  </div>
+{% endif %}
+
+  <!-- Username -->
+  <div class="mb-3">
+    <label for="id_username" class="form-label">Username</label>
+    {{ form.username }}
+    {% if form.username.errors %}
+      <div class="text-danger small mt-1">
+        {{ form.username.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Email -->
+  <div class="mb-3">
+    <label for="id_email" class="form-label">Email</label>
+    {{ form.email }}
+    {% if form.email.errors %}
+      <div class="text-danger small mt-1">
+        {{ form.email.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Password -->
+  <div class="mb-3">
+    <label for="id_password" class="form-label">Password</label>
+    <div class="input-group">
+      {{ form.password }}
+      <span class="input-group-text" onclick="togglePassword('id_password', 'eye1')" style="cursor:pointer;">
+        <i class="bi bi-eye-slash" id="eye1"></i>
+      </span>
+    </div>
+    {% if form.password.errors %}
+      <div class="text-danger small mt-1">
+        {{ form.password.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Confirm Password -->
+  <div class="mb-3">
+    <label for="id_confirm_password" class="form-label">Confirm Password</label>
+    <div class="input-group">
+      {{ form.confirm_password }}
+      <span class="input-group-text" onclick="togglePassword('id_confirm_password', 'eye2')" style="cursor:pointer;">
+        <i class="bi bi-eye-slash" id="eye2"></i>
+      </span>
+    </div>
+    {% if form.confirm_password.errors %}
+      <div class="text-danger small mt-1">
+        {{ form.confirm_password.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
   <button type="submit" class="btn btn-success">Register</button>
   <p class="mt-2">Already have an account? <a href="{% url 'login' %}">Login</a></p>
 </form>
+
+<!-- Toggle Password Script -->
+<script>
+  function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("bi-eye-slash");
+      icon.classList.add("bi-eye");
+    } else {
+      input.type = "password";
+      icon.classList.remove("bi-eye");
+      icon.classList.add("bi-eye-slash");
+    }
+  }
+</script>
+
 {% endblock %}

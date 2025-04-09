@@ -24,4 +24,5 @@ urlpatterns = [
     path('group_discussion/', include('group_discussion.urls')),
     path('gd/', include('group_discussion.urls')),
     path('', include('accounts.urls')),
+    path('mcq/', include('techmcq.urls')),
 ]

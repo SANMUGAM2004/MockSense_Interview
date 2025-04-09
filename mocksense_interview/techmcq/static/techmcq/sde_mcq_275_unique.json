@@ -1,0 +1,1920 @@
+[
+  {
+    "question": "Which of the following is a type of DBMS architecture?",
+    "options": {
+      "A": "1-tier",
+      "B": "2-tier",
+      "C": "3-tier",
+      "D": "All of the above"
+    },
+    "answer": "D",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What does ACID stand for in database systems?",
+    "options": {
+      "A": "Atomicity, Consistency, Isolation, Durability",
+      "B": "Accuracy, Concurrency, Isolation, Durability",
+      "C": "Atomicity, Clarity, Isolation, Dependency",
+      "D": "Atomicity, Consistency, Integration, Durability"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which SQL statement is used to extract data from a database?",
+    "options": {
+      "A": "GET",
+      "B": "EXTRACT",
+      "C": "SELECT",
+      "D": "OPEN"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which normal form removes partial dependency?",
+    "options": {
+      "A": "1NF",
+      "B": "2NF",
+      "C": "3NF",
+      "D": "BCNF"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "In Operating Systems, what is a process?",
+    "options": {
+      "A": "A program in execution",
+      "B": "A part of the compiler",
+      "C": "A job in the printer queue",
+      "D": "A memory location"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which of the following is an example of a real-time operating system?",
+    "options": {
+      "A": "Linux",
+      "B": "Windows XP",
+      "C": "RTLinux",
+      "D": "macOS"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which layer of the OSI model deals with routing and forwarding?",
+    "options": {
+      "A": "Data Link",
+      "B": "Network",
+      "C": "Transport",
+      "D": "Session"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which data structure is used in a recursive function call?",
+    "options": {
+      "A": "Queue",
+      "B": "Array",
+      "C": "Stack",
+      "D": "Tree"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which one is NOT a valid HTTP method?",
+    "options": {
+      "A": "GET",
+      "B": "POST",
+      "C": "FETCH",
+      "D": "PUT"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "What is the default port number for HTTP?",
+    "options": {
+      "A": "21",
+      "B": "23",
+      "C": "80",
+      "D": "443"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "In Python, which of the following is used to define a block of code?",
+    "options": {
+      "A": "Brackets",
+      "B": "Parentheses",
+      "C": "Indentation",
+      "D": "Quotation marks"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of the following is NOT a keyword in Python?",
+    "options": {
+      "A": "lambda",
+      "B": "class",
+      "C": "goto",
+      "D": "def"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which protocol is used for secure web browsing?",
+    "options": {
+      "A": "HTTP",
+      "B": "FTP",
+      "C": "HTTPS",
+      "D": "TCP"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "What is the time complexity of accessing an element in an array?",
+    "options": {
+      "A": "O(n)",
+      "B": "O(log n)",
+      "C": "O(1)",
+      "D": "O(n log n)"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which of the following is not an example of a DBMS?",
+    "options": {
+      "A": "MySQL",
+      "B": "Oracle",
+      "C": "PostgreSQL",
+      "D": "MongoText"
+    },
+    "answer": "D",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What symbol is used for comments in Python?",
+    "options": {
+      "A": "//",
+      "B": "#",
+      "C": "/*",
+      "D": "*"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which sorting algorithm has the best average time complexity?",
+    "options": {
+      "A": "Bubble Sort",
+      "B": "Selection Sort",
+      "C": "Merge Sort",
+      "D": "Insertion Sort"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which of the following statements is true about TCP?",
+    "options": {
+      "A": "It is unreliable and fast",
+      "B": "It is connectionless",
+      "C": "It ensures packet delivery",
+      "D": "It does not guarantee delivery"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which OS component manages hardware?",
+    "options": {
+      "A": "Shell",
+      "B": "Kernel",
+      "C": "Compiler",
+      "D": "Editor"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which data structure follows FIFO?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Array",
+      "D": "Tree"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "What does HTML stand for?",
+    "options": {
+      "A": "Hyper Trainer Marking Language",
+      "B": "Hyper Text Markup Language",
+      "C": "Hyper Text Marketing Language",
+      "D": "Hyper Text Mark Language"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "Which keyword is used to define a class in Python?",
+    "options": {
+      "A": "define",
+      "B": "def",
+      "C": "class",
+      "D": "struct"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which command is used to list all files in Linux?",
+    "options": {
+      "A": "show",
+      "B": "list",
+      "C": "ls",
+      "D": "disp"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "What is the output of: print(type([])) in Python?",
+    "options": {
+      "A": "<class 'list'>",
+      "B": "<type 'list'>",
+      "C": "list",
+      "D": "error"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of the following Python types is immutable?",
+    "options": {
+      "A": "List",
+      "B": "Dictionary",
+      "C": "Tuple",
+      "D": "Set"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "What does DNS stand for in networking?",
+    "options": {
+      "A": "Dynamic Network System",
+      "B": "Domain Name System",
+      "C": "Digital Node Server",
+      "D": "Data Naming Service"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "In DBMS, what is the purpose of the PRIMARY KEY?",
+    "options": {
+      "A": "To speed up searches",
+      "B": "To uniquely identify a record",
+      "C": "To link tables",
+      "D": "To define data types"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which OS scheduling algorithm selects the process with the smallest execution time?",
+    "options": {
+      "A": "FCFS",
+      "B": "Round Robin",
+      "C": "SJF",
+      "D": "Priority Scheduling"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which HTTP status code means 'Not Found'?",
+    "options": {
+      "A": "200",
+      "B": "301",
+      "C": "404",
+      "D": "500"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "Which command is used in Python to install a library?",
+    "options": {
+      "A": "python install",
+      "B": "pip install",
+      "C": "pkg install",
+      "D": "setup install"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "In HTML, which tag is used for the largest heading?",
+    "options": {
+      "A": "<head>",
+      "B": "<h6>",
+      "C": "<h1>",
+      "D": "<title>"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "Which of these data structures is used in BFS (Breadth First Search)?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Tree",
+      "D": "Graph"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "What is the primary function of an operating system?",
+    "options": {
+      "A": "Process accounting",
+      "B": "Resource management",
+      "C": "Program compilation",
+      "D": "Database access"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which Python keyword is used to handle exceptions?",
+    "options": {
+      "A": "try",
+      "B": "catch",
+      "C": "handle",
+      "D": "error"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of the following is a NoSQL database?",
+    "options": {
+      "A": "MySQL",
+      "B": "Oracle",
+      "C": "PostgreSQL",
+      "D": "MongoDB"
+    },
+    "answer": "D",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is the file extension of a Python file?",
+    "options": {
+      "A": ".java",
+      "B": ".py",
+      "C": ".html",
+      "D": ".exe"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which protocol is used to send emails?",
+    "options": {
+      "A": "HTTP",
+      "B": "SMTP",
+      "C": "FTP",
+      "D": "DNS"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which DSA operation inserts at the end in a queue?",
+    "options": {
+      "A": "Push",
+      "B": "Enqueue",
+      "C": "Insert",
+      "D": "Append"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "In relational databases, which SQL clause is used to remove duplicates?",
+    "options": {
+      "A": "DISTINCT",
+      "B": "UNIQUE",
+      "C": "REMOVE",
+      "D": "IGNORE"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which memory type is volatile?",
+    "options": {
+      "A": "ROM",
+      "B": "Flash",
+      "C": "RAM",
+      "D": "SSD"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "What does CSS stand for in web development?",
+    "options": {
+      "A": "Creative Style Sheets",
+      "B": "Colorful Style Sheets",
+      "C": "Cascading Style Sheets",
+      "D": "Computer Style Sheets"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "Which Python function returns the length of a list?",
+    "options": {
+      "A": "count()",
+      "B": "length()",
+      "C": "size()",
+      "D": "len()"
+    },
+    "answer": "D",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of the following is used to declare an array in C?",
+    "options": {
+      "A": "int array[]",
+      "B": "int array",
+      "C": "array int[]",
+      "D": "int[] array"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which of the following is a valid IP address?",
+    "options": {
+      "A": "192.168.1.1",
+      "B": "256.300.1.2",
+      "C": "10.0.0.500",
+      "D": "123.456.789.000"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which of the following is a frontend framework?",
+    "options": {
+      "A": "Django",
+      "B": "React",
+      "C": "Flask",
+      "D": "Laravel"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "What does the OS use to keep track of running processes?",
+    "options": {
+      "A": "Queue",
+      "B": "Stack",
+      "C": "Process Control Block",
+      "D": "Thread"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which of these keywords is used to start a loop in Python?",
+    "options": {
+      "A": "loop",
+      "B": "iterate",
+      "C": "for",
+      "D": "repeat"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which clause is used to sort the result of a SQL query?",
+    "options": {
+      "A": "ORDER BY",
+      "B": "GROUP BY",
+      "C": "SORT BY",
+      "D": "ARRANGE BY"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which data structure is best for implementing a priority queue?",
+    "options": {
+      "A": "Array",
+      "B": "Linked List",
+      "C": "Stack",
+      "D": "Heap"
+    },
+    "answer": "D",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which data structure uses the Last In First Out (LIFO) principle?",
+    "options": {
+      "A": "Queue",
+      "B": "Stack",
+      "C": "Heap",
+      "D": "Graph"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "In computer networks, what does LAN stand for?",
+    "options": {
+      "A": "Long Area Network",
+      "B": "Local Area Network",
+      "C": "Low Area Network",
+      "D": "Large Area Network"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which SQL statement is used to remove a record from a table?",
+    "options": {
+      "A": "REMOVE",
+      "B": "DELETE",
+      "C": "DROP",
+      "D": "ERASE"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which of these is not an operating system?",
+    "options": {
+      "A": "Linux",
+      "B": "Windows",
+      "C": "Oracle",
+      "D": "macOS"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "In Python, how do you insert comments in code?",
+    "options": {
+      "A": "// comment",
+      "B": "/* comment */",
+      "C": "# comment",
+      "D": "! comment"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of these data structures can be used to implement recursion?",
+    "options": {
+      "A": "Queue",
+      "B": "Array",
+      "C": "Heap",
+      "D": "Stack"
+    },
+    "answer": "D",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which protocol is used to browse websites?",
+    "options": {
+      "A": "FTP",
+      "B": "SMTP",
+      "C": "HTTP",
+      "D": "SSH"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "In DBMS, which command is used to add a new row into a table?",
+    "options": {
+      "A": "ADD",
+      "B": "INSERT",
+      "C": "UPDATE",
+      "D": "APPEND"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which OS feature allows multiple processes to run at the same time?",
+    "options": {
+      "A": "Virtualization",
+      "B": "Concurrency",
+      "C": "Multitasking",
+      "D": "Scheduling"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "In Python, what is the result of 3 * 'abc'?",
+    "options": {
+      "A": "abcabcabc",
+      "B": "abc3",
+      "C": "Error",
+      "D": "3abc"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "What does the <a> tag in HTML define?",
+    "options": {
+      "A": "Anchor (link)",
+      "B": "Article",
+      "C": "Action",
+      "D": "App"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "Which algorithm is used to find the shortest path in a graph?",
+    "options": {
+      "A": "Kruskal’s algorithm",
+      "B": "Prim’s algorithm",
+      "C": "Dijkstra’s algorithm",
+      "D": "DFS"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which layer of the OSI model is responsible for routing?",
+    "options": {
+      "A": "Data Link",
+      "B": "Network",
+      "C": "Transport",
+      "D": "Application"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which SQL command is used to change data in a table?",
+    "options": {
+      "A": "CHANGE",
+      "B": "ALTER",
+      "C": "UPDATE",
+      "D": "MODIFY"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which OS component is responsible for memory management?",
+    "options": {
+      "A": "Kernel",
+      "B": "Shell",
+      "C": "Driver",
+      "D": "Loader"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which attribute is used in HTML to define image source?",
+    "options": {
+      "A": "href",
+      "B": "src",
+      "C": "alt",
+      "D": "path"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Web"
+  },
+  {
+    "question": "Which data structure uses the First In First Out (FIFO) method?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Tree",
+      "D": "Linked List"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which IP class provides the most number of host addresses?",
+    "options": {
+      "A": "Class A",
+      "B": "Class B",
+      "C": "Class C",
+      "D": "Class D"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which SQL keyword is used to fetch data?",
+    "options": {
+      "A": "GET",
+      "B": "FETCH",
+      "C": "SELECT",
+      "D": "FIND"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which function is used in Python to convert a string to an integer?",
+    "options": {
+      "A": "int()",
+      "B": "str()",
+      "C": "input()",
+      "D": "float()"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which data structure is ideal for implementing undo functionality?",
+    "options": {
+      "A": "Queue",
+      "B": "Array",
+      "C": "Stack",
+      "D": "Heap"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which network device forwards data packets between computer networks?",
+    "options": {
+      "A": "Router",
+      "B": "Switch",
+      "C": "Hub",
+      "D": "Repeater"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "In SQL, which command removes a table from the database?",
+    "options": {
+      "A": "DELETE",
+      "B": "REMOVE",
+      "C": "DROP",
+      "D": "CLEAR"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which operating system uses the concept of time slicing for multitasking?",
+    "options": {
+      "A": "Batch OS",
+      "B": "Real-time OS",
+      "C": "Time-sharing OS",
+      "D": "Embedded OS"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "What does the 'len()' function return in Python?",
+    "options": {
+      "A": "Data type",
+      "B": "Length of object",
+      "C": "Size in memory",
+      "D": "Line number"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which data structure is best suited for hierarchical data representation?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Tree",
+      "D": "Array"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which protocol is used to send emails?",
+    "options": {
+      "A": "HTTP",
+      "B": "FTP",
+      "C": "SMTP",
+      "D": "TCP"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "What is the default port number for MySQL?",
+    "options": {
+      "A": "3306",
+      "B": "1433",
+      "C": "1521",
+      "D": "8080"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which of the following is NOT a function of an OS?",
+    "options": {
+      "A": "File management",
+      "B": "Process scheduling",
+      "C": "Compiler design",
+      "D": "Memory management"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which Python function converts an integer to a string?",
+    "options": {
+      "A": "str()",
+      "B": "int()",
+      "C": "input()",
+      "D": "repr()"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which data structure is used in BFS (Breadth First Search)?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Set",
+      "D": "List"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which address uniquely identifies a device on a network?",
+    "options": {
+      "A": "MAC Address",
+      "B": "Subnet Mask",
+      "C": "Port Number",
+      "D": "Hostname"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which SQL keyword is used to sort the result-set?",
+    "options": {
+      "A": "SORT BY",
+      "B": "ORDER",
+      "C": "ORDER BY",
+      "D": "SORT"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which type of OS handles multiple users simultaneously?",
+    "options": {
+      "A": "Single-user OS",
+      "B": "Batch OS",
+      "C": "Multi-user OS",
+      "D": "Real-time OS"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "OS"
+  },
+  {
+    "question": "Which method in Python adds an element to the end of a list?",
+    "options": {
+      "A": "append()",
+      "B": "add()",
+      "C": "insert()",
+      "D": "push()"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which data structure allows fast searching using keys?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Hash Table",
+      "D": "Array"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which device connects multiple networks and directs data between them?",
+    "options": {
+      "A": "Hub",
+      "B": "Switch",
+      "C": "Router",
+      "D": "Bridge"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "Which SQL clause is used to filter rows based on a condition?",
+    "options": {
+      "A": "WHERE",
+      "B": "HAVING",
+      "C": "GROUP BY",
+      "D": "FILTER"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is the extension of a Python file?",
+    "options": {
+      "A": ".pt",
+      "B": ".p",
+      "C": ".py",
+      "D": ".python"
+    },
+    "answer": "C",
+    "difficulty": "easy",
+    "topic": "Python"
+  },
+  {
+    "question": "Which data structure is suitable for implementing DFS?",
+    "options": {
+      "A": "Queue",
+      "B": "Stack",
+      "C": "Heap",
+      "D": "Priority Queue"
+    },
+    "answer": "B",
+    "difficulty": "easy",
+    "topic": "DSA"
+  },
+  {
+    "question": "What does HTTP stand for?",
+    "options": {
+      "A": "HyperText Transfer Protocol",
+      "B": "HighText Transfer Protocol",
+      "C": "HyperText Transmission Protocol",
+      "D": "High Transmission Text Protocol"
+    },
+    "answer": "A",
+    "difficulty": "easy",
+    "topic": "CN"
+  },
+  {
+    "question": "What is the primary advantage of using a B+ tree over a B-tree in databases?",
+    "options": {
+      "A": "Faster deletions",
+      "B": "Faster insertions",
+      "C": "All keys are stored in leaves, improving range queries",
+      "D": "Lower tree height"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which OS scheduling algorithm allows the shortest remaining time job to execute first?",
+    "options": {
+      "A": "Round Robin",
+      "B": "SJF",
+      "C": "Priority Scheduling",
+      "D": "SRTF"
+    },
+    "answer": "D"
+  },
+  {
+    "question": "Which protocol uses a three-way handshake to establish a connection?",
+    "options": {
+      "A": "UDP",
+      "B": "FTP",
+      "C": "TCP",
+      "D": "IP"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "In Python, what is the output of `print(0.1 + 0.2 == 0.3)`?",
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "None",
+      "D": "Error"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which data structure is ideal for implementing undo operations in text editors?",
+    "options": {
+      "A": "Queue",
+      "B": "Hash Table",
+      "C": "Stack",
+      "D": "Array"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "What is the key idea behind the CAP theorem in distributed systems?",
+    "options": {
+      "A": "Trade-off between consistency, availability, and partition tolerance",
+      "B": "Improving disk access",
+      "C": "Maximizing CPU usage",
+      "D": "Securing data at rest"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which HTTP status code indicates that the client must authenticate itself to get the requested response?",
+    "options": {
+      "A": "404",
+      "B": "403",
+      "C": "401",
+      "D": "500"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which sorting algorithm is not stable?",
+    "options": {
+      "A": "Bubble Sort",
+      "B": "Merge Sort",
+      "C": "Quick Sort",
+      "D": "Insertion Sort"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "In SQL, which keyword is used to prevent duplicate rows from being returned?",
+    "options": {
+      "A": "DISTINCT",
+      "B": "UNIQUE",
+      "C": "PRIMARY",
+      "D": "LIMIT"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which part of the operating system interacts directly with the hardware?",
+    "options": {
+      "A": "Shell",
+      "B": "Application Layer",
+      "C": "Kernel",
+      "D": "File System"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "In networks, what does TTL (Time To Live) in an IP packet do?",
+    "options": {
+      "A": "Specifies the packet priority",
+      "B": "Limits the packet's lifespan",
+      "C": "Encrypts the packet content",
+      "D": "Defines the destination port"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "What is the result of `2 ** 3 ** 2` in Python?",
+    "options": {
+      "A": "512",
+      "B": "64",
+      "C": "16",
+      "D": "36"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which join returns all rows from both tables, with NULLs in places where there is no match?",
+    "options": {
+      "A": "INNER JOIN",
+      "B": "LEFT JOIN",
+      "C": "RIGHT JOIN",
+      "D": "FULL OUTER JOIN"
+    },
+    "answer": "D"
+  },
+  {
+    "question": "Which of the following is true about RESTful APIs?",
+    "options": {
+      "A": "They require WebSockets",
+      "B": "They only support XML",
+      "C": "They are stateless",
+      "D": "They do not support HTTP methods"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which of the following uses exponential backoff in case of collisions?",
+    "options": {
+      "A": "ARP",
+      "B": "TCP",
+      "C": "Ethernet CSMA/CD",
+      "D": "ICMP"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which command in Linux shows the current running processes?",
+    "options": {
+      "A": "ls",
+      "B": "cd",
+      "C": "ps",
+      "D": "chmod"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "In DSA, which data structure is used to detect cycles in a directed graph?",
+    "options": {
+      "A": "Heap",
+      "B": "Queue",
+      "C": "Stack in DFS",
+      "D": "HashSet in BFS"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "In which scenario is a mutex preferred over a semaphore?",
+    "options": {
+      "A": "When multiple resource instances exist",
+      "B": "When deadlock prevention is not required",
+      "C": "When locking a single resource between threads",
+      "D": "When signaling between threads"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which data structure supports LIFO order?",
+    "options": {
+      "A": "Queue",
+      "B": "Stack",
+      "C": "Deque",
+      "D": "Priority Queue"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which HTTP method is idempotent?",
+    "options": {
+      "A": "POST",
+      "B": "PUT",
+      "C": "CONNECT",
+      "D": "PATCH"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which data structure is typically used to implement recursion internally?",
+    "options": {
+      "A": "Queue",
+      "B": "Stack",
+      "C": "Heap",
+      "D": "Array"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which of the following is NOT a characteristic of an ACID transaction?",
+    "options": {
+      "A": "Atomicity",
+      "B": "Consistency",
+      "C": "Isolation",
+      "D": "Durability of performance"
+    },
+    "answer": "D"
+  },
+  {
+    "question": "What does the Python `zip()` function do?",
+    "options": {
+      "A": "Combines elements from multiple iterables",
+      "B": "Compresses a file",
+      "C": "Creates a dictionary from a list",
+      "D": "Joins two strings"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which of the following best describes a deadlock?",
+    "options": {
+      "A": "A condition where two processes wait indefinitely for each other",
+      "B": "A syntax error",
+      "C": "A memory overflow",
+      "D": "An OS crash"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which of these is a disadvantage of linked lists over arrays?",
+    "options": {
+      "A": "Fixed size",
+      "B": "Inefficient insertion",
+      "C": "Poor random access",
+      "D": "Wasted memory"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which layer in the OSI model ensures reliable data transfer?",
+    "options": {
+      "A": "Network",
+      "B": "Data Link",
+      "C": "Transport",
+      "D": "Session"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which of the following Python keywords is used to handle exceptions?",
+    "options": {
+      "A": "try",
+      "B": "catch",
+      "C": "handle",
+      "D": "trap"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which database normal form eliminates transitive dependency?",
+    "options": {
+      "A": "1NF",
+      "B": "2NF",
+      "C": "3NF",
+      "D": "BCNF"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "In C++, what is a virtual function?",
+    "options": {
+      "A": "A function that always returns void",
+      "B": "A function that is defined in a header file",
+      "C": "A function that can be overridden in derived classes",
+      "D": "A static function"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "What is the result of calling `set([1,2,2,3])` in Python?",
+    "options": {
+      "A": "[1,2,3]",
+      "B": "{1,2,3}",
+      "C": "[1,2,2,3]",
+      "D": "{1,1,2,2,3,3}"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "What data structure is typically used in Dijkstra’s algorithm?",
+    "options": {
+      "A": "Stack",
+      "B": "Priority Queue",
+      "C": "Queue",
+      "D": "Linked List"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which of the following is true about garbage collection in Python?",
+    "options": {
+      "A": "It requires manual memory management",
+      "B": "It uses reference counting and cyclic GC",
+      "C": "It can only collect strings",
+      "D": "It runs only at program end"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which operating system concept is responsible for CPU sharing among processes?",
+    "options": {
+      "A": "Interrupts",
+      "B": "Swapping",
+      "C": "Scheduling",
+      "D": "Paging"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which part of a URL specifies the server location?",
+    "options": {
+      "A": "Protocol",
+      "B": "Domain name",
+      "C": "Query string",
+      "D": "Port number"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "What is the result of `None == 0` in Python?",
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "None",
+      "D": "Error"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which SQL command is used to change existing data in a table?",
+    "options": {
+      "A": "ALTER",
+      "B": "UPDATE",
+      "C": "INSERT",
+      "D": "MODIFY"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "What is the average-case time complexity of Merge Sort?",
+    "options": {
+      "A": "O(n)",
+      "B": "O(log n)",
+      "C": "O(n^2)",
+      "D": "O(n log n)"
+    },
+    "answer": "D"
+  },
+  {
+    "question": "Which protocol is responsible for assigning IP addresses dynamically?",
+    "options": {
+      "A": "DNS",
+      "B": "DHCP",
+      "C": "IP",
+      "D": "ARP"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which keyword is used to inherit a class in Java?",
+    "options": {
+      "A": "extends",
+      "B": "inherits",
+      "C": "implements",
+      "D": "super"
+    },
+    "answer": "A"
+  },
+  {
+    "question": "Which one of the following is a non-linear data structure?",
+    "options": {
+      "A": "Array",
+      "B": "Stack",
+      "C": "Queue",
+      "D": "Tree"
+    },
+    "answer": "D"
+  },
+  {
+    "question": "What does DNS stand for?",
+    "options": {
+      "A": "Data Network Server",
+      "B": "Domain Name System",
+      "C": "Dynamic Name Service",
+      "D": "Data Naming Service"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "What does SQL injection exploit?",
+    "options": {
+      "A": "Weak encryption",
+      "B": "Improper input validation",
+      "C": "Session hijacking",
+      "D": "Cross-site scripting"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "What is the output of `len(set('banana'))` in Python?",
+    "options": {
+      "A": "6",
+      "B": "5",
+      "C": "3",
+      "D": "4"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which method in Python is used to initialize a class object?",
+    "options": {
+      "A": "initialize()",
+      "B": "create()",
+      "C": "__init__()",
+      "D": "constructor()"
+    },
+    "answer": "C"
+  },
+  {
+    "question": "Which of the following is a hashing algorithm?",
+    "options": {
+      "A": "RSA",
+      "B": "SHA-256",
+      "C": "DES",
+      "D": "AES"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which of these is a full-duplex communication protocol?",
+    "options": {
+      "A": "UDP",
+      "B": "TCP",
+      "C": "ICMP",
+      "D": "ARP"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which data structure is best for BFS in a graph?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Priority Queue",
+      "D": "Set"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "In JavaScript, which keyword is used to define a constant?",
+    "options": {
+      "A": "let",
+      "B": "const",
+      "C": "static",
+      "D": "final"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "Which of the following best describes polymorphism?",
+    "options": {
+      "A": "Multiple classes with one interface",
+      "B": "One object behaving like many",
+      "C": "Hiding implementation details",
+      "D": "Bundling data and methods"
+    },
+    "answer": "B"
+  },
+  {
+    "question": "In a distributed system, what is the primary role of the consensus algorithm like Paxos or Raft?",
+    "options": {
+      "A": "Manage routing tables",
+      "B": "Ensure secure user authentication",
+      "C": "Achieve agreement among nodes on a single data value",
+      "D": "Monitor resource usage"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "Distributed Systems"
+  },
+  {
+    "question": "In B+ Trees, why are all records stored only at the leaf level?",
+    "options": {
+      "A": "To reduce memory consumption",
+      "B": "To ensure all leaf nodes are connected in a linked list for efficient range queries",
+      "C": "To maintain a complete binary tree structure",
+      "D": "To eliminate the need for parent pointers"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "DBMS"
+  },
+  {
+    "question": "In Operating Systems, what problem does Belady's anomaly refer to?",
+    "options": {
+      "A": "Increase in page faults with increasing number of frames",
+      "B": "Stack overflow error",
+      "C": "Starvation in scheduling",
+      "D": "Deadlock due to resource allocation"
+    },
+    "answer": "A",
+    "difficulty": "Hard",
+    "topic": "OS"
+  },
+  {
+    "question": "What is the time complexity of finding the median of two sorted arrays of size n?",
+    "options": {
+      "A": "O(n)",
+      "B": "O(log n)",
+      "C": "O(n log n)",
+      "D": "O(1)"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which technique is commonly used in operating systems to prevent deadlocks?",
+    "options": {
+      "A": "Round-robin scheduling",
+      "B": "Disk defragmentation",
+      "C": "Resource allocation graph analysis",
+      "D": "Page replacement algorithm"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "OS"
+  },
+  {
+    "question": "In TCP congestion control, what is the purpose of the slow start algorithm?",
+    "options": {
+      "A": "To decrease transmission rate gradually",
+      "B": "To exponentially increase congestion window until threshold is reached",
+      "C": "To retransmit lost packets",
+      "D": "To detect duplicate acknowledgments"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "CN"
+  },
+  {
+    "question": "What is the average time complexity of inserting an element in an AVL Tree?",
+    "options": {
+      "A": "O(n)",
+      "B": "O(log n)",
+      "C": "O(1)",
+      "D": "O(n log n)"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which of the following SQL isolation levels prevents both dirty reads and non-repeatable reads?",
+    "options": {
+      "A": "Read Uncommitted",
+      "B": "Read Committed",
+      "C": "Repeatable Read",
+      "D": "Serializable"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which algorithm is used to find Strongly Connected Components in a directed graph?",
+    "options": {
+      "A": "Prim’s Algorithm",
+      "B": "Dijkstra’s Algorithm",
+      "C": "Kosaraju’s Algorithm",
+      "D": "Kruskal’s Algorithm"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "In Python, what does the `@staticmethod` decorator do?",
+    "options": {
+      "A": "Allows the method to access only class variables",
+      "B": "Marks a method that does not receive an implicit first argument",
+      "C": "Restricts method visibility",
+      "D": "Makes a method private"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of the following is a characteristic of a real-time operating system (RTOS)?",
+    "options": {
+      "A": "Batch job scheduling",
+      "B": "High throughput over predictable timing",
+      "C": "Deterministic response to events",
+      "D": "Shared memory between all threads"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "OS"
+  },
+  {
+    "question": "Which Web API is primarily used for handling asynchronous HTTP requests in modern web apps?",
+    "options": {
+      "A": "XMLHttpRequest",
+      "B": "WebSocket",
+      "C": "fetch",
+      "D": "LocalStorage"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "Web"
+  },
+  {
+    "question": "Which data structure is used in the implementation of the Huffman coding algorithm?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Heap",
+      "D": "Hash Table"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which consistency model allows reads to return stale data but guarantees eventual consistency?",
+    "options": {
+      "A": "Strict consistency",
+      "B": "Sequential consistency",
+      "C": "Causal consistency",
+      "D": "Eventual consistency"
+    },
+    "answer": "D",
+    "difficulty": "Hard",
+    "topic": "Distributed Systems"
+  },
+  {
+    "question": "In database systems, what does the acronym ACID stand for?",
+    "options": {
+      "A": "Atomicity, Consistency, Isolation, Durability",
+      "B": "Access, Control, Integrity, Data",
+      "C": "Accuracy, Concurrency, Isolation, Delay",
+      "D": "Atomicity, Clustering, Indexing, Durability"
+    },
+    "answer": "A",
+    "difficulty": "Hard",
+    "topic": "DBMS"
+  },
+  {
+    "question": "Which page replacement algorithm suffers from Belady’s anomaly?",
+    "options": {
+      "A": "Least Recently Used (LRU)",
+      "B": "Optimal Page Replacement",
+      "C": "First-In-First-Out (FIFO)",
+      "D": "Clock Algorithm"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "OS"
+  },
+  {
+    "question": "Which of the following data structures is best suited for implementing priority queues?",
+    "options": {
+      "A": "Stack",
+      "B": "Queue",
+      "C": "Heap",
+      "D": "Hash Map"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "What is the primary purpose of the CAP theorem in distributed systems?",
+    "options": {
+      "A": "To provide a framework for caching data",
+      "B": "To balance memory and processing power",
+      "C": "To describe trade-offs between consistency, availability, and partition tolerance",
+      "D": "To optimize network bandwidth usage"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "Distributed Systems"
+  },
+  {
+    "question": "Which feature of Python allows creating iterators with less memory usage?",
+    "options": {
+      "A": "Tuples",
+      "B": "List comprehensions",
+      "C": "Generators",
+      "D": "Lambdas"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "Python"
+  },
+  {
+    "question": "What is the time complexity of Dijkstra’s algorithm using a binary heap?",
+    "options": {
+      "A": "O(V^2)",
+      "B": "O(V + E)",
+      "C": "O((V + E) log V)",
+      "D": "O(E log E)"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "Which protocol ensures reliable data transfer over an unreliable network?",
+    "options": {
+      "A": "UDP",
+      "B": "TCP",
+      "C": "ICMP",
+      "D": "ARP"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "CN"
+  },
+  {
+    "question": "Which of the following best describes a B+ Tree in databases?",
+    "options": {
+      "A": "All records are stored in internal nodes",
+      "B": "All values are stored in root node",
+      "C": "All records are stored at the leaf level and internal nodes store keys only",
+      "D": "Each node contains one value and two children"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DBMS"
+  },
+  {
+    "question": "What is the output of the following Python code?\n\n```python\nx = [i for i in range(3)]\ny = (i for i in range(3))\nprint(sum(x) == sum(y))\n```",
+    "options": {
+      "A": "True",
+      "B": "False",
+      "C": "TypeError",
+      "D": "None"
+    },
+    "answer": "A",
+    "difficulty": "Hard",
+    "topic": "Python"
+  },
+  {
+    "question": "Which of the following is **not** a property of a red-black tree?",
+    "options": {
+      "A": "The root is always black",
+      "B": "Red nodes cannot have red children",
+      "C": "Every path from a node to its descendant leaves contains the same number of red nodes",
+      "D": "All leaves (NIL) are black"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "DSA"
+  },
+  {
+    "question": "What does the HTTP 503 status code indicate?",
+    "options": {
+      "A": "Gateway Timeout",
+      "B": "Service Unavailable",
+      "C": "Not Implemented",
+      "D": "Request Timeout"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "Web"
+  },
+  {
+    "question": "In computer networks, which layer is responsible for reliable transmission?",
+    "options": {
+      "A": "Network layer",
+      "B": "Data Link layer",
+      "C": "Transport layer",
+      "D": "Session layer"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "CN"
+  },
+  {
+    "question": "Which of the following scheduling algorithms may lead to starvation?",
+    "options": {
+      "A": "First-Come, First-Served (FCFS)",
+      "B": "Round Robin (RR)",
+      "C": "Shortest Job Next (SJN)",
+      "D": "Multilevel Queue"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "OS"
+  },
+  {
+    "question": "What is a closure in Python?",
+    "options": {
+      "A": "A class with no variables",
+      "B": "A function with no parameters",
+      "C": "A function object that remembers values in enclosing scopes",
+      "D": "A function that returns a list"
+    },
+    "answer": "C",
+    "difficulty": "Hard",
+    "topic": "Python"
+  },
+  {
+    "question": "In JavaScript, which statement about the event loop is true?",
+    "options": {
+      "A": "It blocks the execution of async tasks",
+      "B": "It executes synchronous code before asynchronous callbacks",
+      "C": "It runs in a separate thread",
+      "D": "It executes only setTimeout calls"
+    },
+    "answer": "B",
+    "difficulty": "Hard",
+    "topic": "Web"
+  }
+]

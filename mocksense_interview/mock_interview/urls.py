@@ -5,7 +5,7 @@ from . import views
     # path("", views.index, name="mock_interview_index"),  # Home page or dashboard
     # path("quiz/", views.quiz_view, name="mock_interview_quiz"),  # Quiz page
     # path("start/", views.start, name="start_interview"),  # Start interview
-    # path("result/", views.result, name="mock_interview_result"),  # Result page
+    # path("result/", views.result, name="mock_interview_result"),  
 urlpatterns = [
     path("", views.index, name="mock_interview_index"),
     path('start/', views.start_interview, name='start_interview'),
@@ -17,8 +17,6 @@ urlpatterns = [
     path("upload_resume/", views.upload_resume, name="upload_resume"),
     path("resume_uploading/", views.resume_uploading, name="resume_uploading"),
     path("limit-exceeded/", views.limit_exceeded, name="limit_exceeded"),
-
-    
+    path("process_frame/", views.process_frame, name="process_frame"),
+    path("detect_emotion/", views.detect_emotion, name="detect_emotion"),
 ]
-
-# ]

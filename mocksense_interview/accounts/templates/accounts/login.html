@@ -23,13 +23,32 @@
     <label>Username</label>
     <input type="text" name="username" class="form-control" required>
   </div>
-  <div class="mb-3">
+  <div class="mb-3 position-relative">
     <label>Password</label>
-    <input type="password" name="password" class="form-control" required>
-  </div>
+    <div class="input-group">
+      <input type="password" name="password" id="passwordInput" class="form-control" required>
+      <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+        <i class="bi bi-eye-slash" id="eyeIcon"></i>
+      </span>
+    </div>
+  </div>  
   <button type="submit" class="btn btn-primary">Login</button>
   <p class="mt-2">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
 </form>
+
+
+<script>
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("passwordInput");
+  const eyeIcon = document.getElementById("eyeIcon");
+
+  togglePassword.addEventListener("click", () => {
+    const type = passwordInput.type === "password" ? "text" : "password";
+    passwordInput.type = type;
+    eyeIcon.classList.toggle("bi-eye");
+    eyeIcon.classList.toggle("bi-eye-slash");
+  });
+</script>
 
 <!-- Bootstrap Toast JS -->
 <script>
@@ -41,5 +60,14 @@
     });
   });
 </script>
+
+<script>
+  sessionStorage.removeItem("face_violations");
+  sessionStorage.removeItem("noface_violations");
+  sessionStorage.removeItem("camera_initialized");
+  sessionStorage.removeItem("camera_alerted");
+  sessionStorage.removeItem("cameraGranted");
+</script>
+
 
 {% endblock %}
