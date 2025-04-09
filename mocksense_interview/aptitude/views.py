@@ -96,10 +96,9 @@ def quiz_result(request):
     score = 0
 
     for answer in answers:
-        # Compare the selected answer with the correct answer
+        # Compare the selected answer with the correct answer 
         if answer["user_answer"] == answer["question"]["answer"]:
             score += 1
-
     percentage = (score / total_questions) * 100 if total_questions else 0
 
     # Clear session data after showing results (optional)

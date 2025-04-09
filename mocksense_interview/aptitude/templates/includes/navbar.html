@@ -95,10 +95,10 @@
         document.body.appendChild(video);
 
         try {
-          if (localStorage.getItem("camera_initialized") !== "true") {
+          if (sessionStorage.getItem("camera_initialized") !== "true") {
             streamRef = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = streamRef;
-            localStorage.setItem("camera_initialized", "true");
+            sessionStorage.setItem("camera_initialized", "true");
           } else {
             // Attempt to reuse previous stream or request again
             streamRef = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -109,43 +109,51 @@
 
           let isAlertActive = false;
 let redirectPending = false;
-
-let faceViolations = parseInt(localStorage.getItem("face_violations") || "0");
-let noFaceViolations = parseInt(localStorage.getItem("noface_violations") || "0");
+let isRedirecting = false;
+let faceViolations = parseInt(sessionStorage.getItem("face_violations") || "0");
+let noFaceViolations = parseInt(sessionStorage.getItem("noface_violations") || "0");
 
 const runDetectionLoop = async () => {
-  if (video.readyState === 4 && !isAlertActive && !redirectPending) {
+  const redirectedFlag = sessionStorage.getItem("is_redirecting") === "true";
+if (isRedirecting || redirectedFlag || !video.srcObject) return;
+
+
+  if (video.readyState === 4 && !isAlertActive && !redirectPending && !isRedirecting)    {
     const faces = await model.estimateFaces(video, false);
 
     if (faces.length > 1) {
-      isAlertActive = true;
-      faceViolations++;
-      alert("⚠️ Multiple faces detected!");
-      isAlertActive = false;
+  isAlertActive = true;
+  faceViolations++;
 
-      // Update localStorage after alert to avoid stacked alerts
-      localStorage.setItem("face_violations", faceViolations);
+  if (!isRedirecting) {
+    alert("⚠️ Multiple faces detected!");
+  }
 
-      if (faceViolations >= 3) {
-        redirectPending = true;
-        window.location.href = "{% url 'limit_exceeded' %}?reason=multiple_faces";
-        return;
-      }
+  isAlertActive = false;
+  sessionStorage.setItem("face_violations", faceViolations);
 
-    } else if (faces.length === 0) {
-      isAlertActive = true;
-      noFaceViolations++;
-      alert("⚠️ No face detected! Please stay in frame.");
-      isAlertActive = false;
+  if (faceViolations >= 3) {
+    window.location.href = "{% url 'limit_exceeded' %}?reason=multiple_faces";
+    return;
+  }
 
-      localStorage.setItem("noface_violations", noFaceViolations);
+} else if (faces.length === 0) {
+  isAlertActive = true;
+  noFaceViolations++;
 
-      if (noFaceViolations >= 3) {
-        redirectPending = true;
-        window.location.href = "{% url 'limit_exceeded' %}?reason=no_face";
-        return;
-      }
-    }
+  if (!isRedirecting) {
+    alert("⚠️ No face detected! Please stay in frame.");
+  }
+
+  isAlertActive = false;
+  sessionStorage.setItem("noface_violations", noFaceViolations);
+
+  if (noFaceViolations >= 4) {
+    window.location.href = "{% url 'limit_exceeded' %}?reason=no_face";
+    return;
+  }
+}
+
 
     console.log("faces detected:", faces.length);
     console.log("violations - multiple:", faceViolations, "none:", noFaceViolations);
@@ -159,8 +167,8 @@ const runDetectionLoop = async () => {
         } catch (err) {
         console.warn("Camera access error:", err);
 
-        if (!localStorage.getItem("camera_alerted")) {
-          localStorage.setItem("camera_alerted", "true");
+        if (!sessionStorage.getItem("camera_alerted")) {
+          sessionStorage.setItem("camera_alerted", "true");
           alert("🚫 Camera access is required. Please allow access and reload the page.");
         }
 
@@ -174,11 +182,15 @@ const runDetectionLoop = async () => {
     });
 
     // Optional: Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-      if (streamRef) {
-        streamRef.getTracks().forEach(track => track.stop());
-      }
-    });
+window.addEventListener('beforeunload', () => {
+  isRedirecting = true; // 🔥 This prevents alerts during redirect
+
+  if (streamRef) {
+    streamRef.getTracks().forEach(track => track.stop());
+  }
+});
+
+
   </script>
 {% endif %}
 
@@ -249,12 +261,12 @@ const runDetectionLoop = async () => {
         })
         .then(response => {
           if (response.ok) {
-            // ✅ Clear localStorage on logout
-            localStorage.removeItem("face_violations");
-            localStorage.removeItem("noface_violations");
-            localStorage.removeItem("camera_initialized");
-            localStorage.removeItem("camera_alerted");
-            localStorage.removeItem("cameraGranted");
+            // ✅ Clear sessionStorage on logout
+            sessionStorage.removeItem("face_violations");
+            sessionStorage.removeItem("noface_violations");
+            sessionStorage.removeItem("camera_initialized");
+            sessionStorage.removeItem("camera_alerted");
+            sessionStorage.removeItem("cameraGranted");
 
             document.getElementById("logoutToastContainer").style.display = "block";
             setTimeout(() => {

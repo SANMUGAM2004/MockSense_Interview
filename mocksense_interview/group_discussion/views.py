@@ -51,7 +51,6 @@ apikey = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=apikey)
 model = genai.GenerativeModel("models/gemini-1.5-pro")
 
-
 @csrf_exempt
 def detect_emotion(request):
     """Detect emotion and return motivational quote if user seems confused."""
