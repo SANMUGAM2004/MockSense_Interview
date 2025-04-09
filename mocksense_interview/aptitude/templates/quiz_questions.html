@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aptitude Quiz | Question</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -84,26 +85,29 @@
 </head>
 <body>
     {% include 'includes/navbar.html' %}
-    <div class="container">
+    <div  id="quiz-container" class="container">
         <h1>📝 Aptitude Quiz</h1>
-        <form method="POST">
-            {% csrf_token %}
-            
-            <div class="question-box">
-                <p><strong>Q{{ question_counter }}: {{ question.question }}</strong></p>
-            </div>
+        <form method="POST"
+            hx-post="{% url 'quiz_questions' %}"
+            hx-target="#quiz-container"
+            hx-swap="outerHTML">
+        {% csrf_token %}
+        <div class="question-box">
+            <p><strong>Q{{ question_counter }}: {{ question.question }}</strong></p>
+        </div>
 
-            <div class="options">
-                {% for option in question.options %}
-                    <label>
-                        <input type="radio" name="answer" value="{{ option }}" required onclick="selectOption(this)">
-                        {{ option }}
-                    </label>
-                {% endfor %}
-            </div>
-            
-            <button type="submit" name="action" value="next">Next ➡️</button>
+        <div class="options">
+            {% for option in question.options %}
+                <label>
+                    <input type="radio" name="answer" value="{{ option }}" required onclick="selectOption(this)">
+                    {{ option }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" name="action" value="next">Next ➡️</button>
         </form>
+
     </div>
 
     <script>

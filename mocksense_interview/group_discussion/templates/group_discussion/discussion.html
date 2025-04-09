@@ -6,29 +6,40 @@
     <title>Group Discussion</title>
     <script>
         let videoStream;
+    
         function startCamera() {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {
                     videoStream = stream;
-                    document.getElementById("videoElement").srcObject = stream;
-                    setInterval(captureImage, 3000);  
+    
+                    // Attach to a hidden video element (so face is NOT visible)
+                    const hiddenVideo = document.createElement("video");
+                    hiddenVideo.setAttribute("id", "videoElement");
+                    hiddenVideo.setAttribute("autoplay", true);
+                    hiddenVideo.style.display = "none";
+                    document.body.appendChild(hiddenVideo);
+                    hiddenVideo.srcObject = stream;
+    
+                    // Start emotion detection every 3 seconds
+                    setInterval(captureImage, 3000);
                 })
                 .catch(error => console.error("Error accessing webcam:", error));
         }
-
+    
         function captureImage() {
-            let video = document.getElementById("videoElement");
-            let canvas = document.createElement("canvas");
+            const video = document.getElementById("videoElement");
+            if (!video.videoWidth || !video.videoHeight) return; // avoid empty captures
+            const canvas = document.createElement("canvas");
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            let ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext("2d");
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            let imageData = canvas.toDataURL("image/jpeg");
+            const imageData = canvas.toDataURL("image/jpeg");
             sendImageForEmotionDetection(imageData);
         }
-
+    
         function sendImageForEmotionDetection(imageData) {
-            fetch("/group_discussion/detect_emotion/", {
+            fetch("/mock_interview/detect_emotion/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ "image": imageData })
@@ -40,25 +51,27 @@
             })
             .catch(error => console.error("Error detecting emotion:", error));
         }
-
+    
         function showQuote(quote) {
-            let quoteBox = document.getElementById("quoteBox");
+            const quoteBox = document.getElementById("quoteBox");
             quoteBox.innerText = quote;
             quoteBox.style.display = "block";
             setTimeout(() => {
                 quoteBox.style.display = "none";
             }, 7000);
         }
-
+    
         function stopCamera() {
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
             }
         }
-
+    
+        // Auto start/stop on page load and unload
         window.onload = startCamera;
         window.onbeforeunload = stopCamera;
     </script>
+    
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
         .right-container {
@@ -105,12 +118,12 @@
     {% include 'includes/navbar.html' %}
     <h2>Group Discussion</h2>
 
+
     <div class="right-container">
-        <video id="videoElement" autoplay></video>
-        <div class="emotion-container">
+        <div class="emotion-container" style="position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.75); color: white; padding: 12px; border-radius: 10px; width: 240px;">
             <p id="emotionText">Emotion: Detecting...</p>
-            <p class="quote" id="quoteBox"></p>
-        </div>
+            <p class="quote" id="quoteBox" style="display:none; color: yellow; font-style: italic;"></p>
+        </div>        
     </div>
 
     <h3>🧠 Topic: {{ topic }}</h3>
@@ -124,25 +137,75 @@
         const malePoints = {{ male_points|safe }};
         const femalePoints = {{ female_points|safe }};
         const topic = `{{ topic }}`;
-
+    
         let currentRound = 0;
-        const totalRounds = 5;
+        const totalRounds = 3;
         const userResponses = [];
-
+    
         function getCSRFToken() {
             let csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]');
             return csrfToken ? csrfToken.value : "";
         }
+    
+        function waitForVoices(callback) {
+    let voices = speechSynthesis.getVoices();
+    if (voices.length !== 0) {
+        callback();
+    } else {
+        let interval = setInterval(() => {
+            voices = speechSynthesis.getVoices();
+            if (voices.length !== 0) {
+                clearInterval(interval);
+                callback();
+            }
+        }, 100);
+    }
+}
 
+    
         function speakText(text, voiceType, callback) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            const voices = speechSynthesis.getVoices();
-            utterance.voice = voices.find(voice => voice.name.toLowerCase().includes(voiceType.toLowerCase())) || voices[0];
-            utterance.rate = 1;
-            utterance.onend = callback;
-            speechSynthesis.speak(utterance);
-        }
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
 
+    console.log("Available voices:", voices.map(v => `${v.name} (${v.lang})`));
+
+    let selectedVoice = null;
+
+    // Pick a more reliable male/female voice
+    if (voiceType === "male") {
+        selectedVoice = voices.find(voice =>
+            voice.name.toLowerCase().includes("male") ||
+            voice.name.toLowerCase().includes("daniel") ||
+            voice.name.toLowerCase().includes("google us english")
+        );
+    } else if (voiceType === "female") {
+        selectedVoice = voices.find(voice =>
+            voice.name.toLowerCase().includes("female") ||
+            voice.name.toLowerCase().includes("susan") ||
+            voice.name.toLowerCase().includes("zira") ||
+            voice.name.toLowerCase().includes("google uk english")
+        );
+    }
+
+    // Fallback if nothing found
+    utterance.voice = selectedVoice || voices[0];
+    utterance.rate = 1;
+
+    utterance.onend = () => {
+        console.log(`✅ Finished speaking (${voiceType}):`, text);
+        callback();
+    };
+
+    utterance.onerror = (e) => {
+        console.error(`❌ Speech error (${voiceType}):`, e);
+        callback(); // Fallback: still move on
+    };
+
+    console.log(`🔊 Speaking (${voiceType}):`, text, "| Voice:", utterance.voice?.name);
+    speechSynthesis.speak(utterance);
+}
+
+    
         async function startDiscussionRounds() {
             if (currentRound >= totalRounds) {
                 await sendAllResponsesToServer();
@@ -150,21 +213,21 @@
                 window.location.href = "/group_discussion/result/";
                 return;
             }
-
+    
             const malePoint = malePoints[currentRound] || "";
             const femalePoint = femalePoints[currentRound] || "";
-
+    
             document.getElementById("messages").innerHTML += `<p><b>Round ${currentRound + 1}</b></p>`;
-            document.getElementById("messages").innerHTML += `<p class="message ai"><b>AI Male:</b> ${malePoint}</p>`;
-
+            document.getElementById("messages").innerHTML += `<p class="message ai"><b>Aurthur:</b> ${malePoint}</p>`;
+    
             speakText(malePoint, "male", () => {
-                document.getElementById("messages").innerHTML += `<p class="message ai"><b>AI Female:</b> ${femalePoint}</p>`;
+                document.getElementById("messages").innerHTML += `<p class="message ai"><b>Sadie:</b> ${femalePoint}</p>`;
                 speakText(femalePoint, "female", () => {
                     startUserRecording();
                 });
             });
         }
-
+    
         function startUserRecording() {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = 'en-US';
@@ -197,6 +260,8 @@
             };
         }
 
+
+    
         async function sendAllResponsesToServer() {
             try {
                 const response = await fetch("/group_discussion/save_response/", {
@@ -216,13 +281,15 @@
                 console.error("Error saving responses:", error);
             }
         }
-
+    
+        // ✅ Wait for voices before beginning the discussion
         window.addEventListener("load", () => {
-            setTimeout(() => {
-                speechSynthesis.onvoiceschanged = () => startDiscussionRounds();
-                if (speechSynthesis.getVoices().length > 0) startDiscussionRounds();
-            }, 2000);
+            waitForVoices(() => {
+                console.log("✅ Voices loaded. Starting discussion.");
+                startDiscussionRounds();
+            });
         });
     </script>
+    
 </body>
 </html>
