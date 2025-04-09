@@ -1,20 +1,27 @@
 <!-- Auth Button & Toast -->
 <div style="position: fixed; top: 10px; right: 10px; z-index: 1055;">
   {% if user.is_authenticated %}
-    <button id="logoutBtn"
-       style="
-         background-color: #8B0000;
-         color: white;
-         padding: 8px 16px;
-         border: none;
-         border-radius: 5px;
-         font-weight: bold;
-         cursor: pointer;
-       ">
-      Logout
-    </button>
+  <style>
+    #logoutBtn {
+      background-color: #8B0000;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+  
+    #logoutBtn:hover {
+      background-color: #a30000;
+      transform: scale(1.05);
+    }
+  </style>
+  
+  <button id="logoutBtn">Logout</button>
+  
   {% else %}
-    <!-- Toast Notification Container -->
     <div class="custom-toast-container">
       <div id="authToast" class="custom-toast">
         <div class="custom-toast-body">
@@ -44,38 +51,145 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+    video {
+      display: none;
+    }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@latest"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.addEventListener('contextmenu', e => e.preventDefault());
-      document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) &&
-            ['c', 'v', 'x', 'u', 's'].includes(e.key.toLowerCase())) {
-          e.preventDefault();
-        }
+    let tabSwitchCount = 0;
+    let shouldTerminate = false;
+    let streamRef = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      // --- Anti-inspection & copy prevention ---
+      document.addEventListener("contextmenu", e => e.preventDefault());
+      document.addEventListener("keydown", e => {
+        if ((e.ctrlKey || e.metaKey) && ['c','v','x','u','s'].includes(e.key.toLowerCase())) e.preventDefault();
         if (e.key === 'F12') e.preventDefault();
       });
-      document.addEventListener('copy', e => e.preventDefault());
-      document.addEventListener('paste', e => e.preventDefault());
+      document.addEventListener("copy", e => e.preventDefault());
+      document.addEventListener("paste", e => e.preventDefault());
+
+      // --- Tab Switch Monitoring ---
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          tabSwitchCount++;
+          if (tabSwitchCount >= 3) {
+            shouldTerminate = true;
+          } else {
+            alert("⚠️ Switching tabs is not allowed!");
+          }
+        } else if (shouldTerminate) {
+          window.location.href = "{% url 'limit_exceeded' %}?reason=tab";
+        }
+      });
+
+      let video = document.createElement('video');
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        try {
+          if (sessionStorage.getItem("camera_initialized") !== "true") {
+            streamRef = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = streamRef;
+            sessionStorage.setItem("camera_initialized", "true");
+          } else {
+            // Attempt to reuse previous stream or request again
+            streamRef = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = streamRef;
+          }
+
+          const model = await blazeface.load();
+
+          let isAlertActive = false;
+let redirectPending = false;
+let isRedirecting = false;
+let faceViolations = parseInt(sessionStorage.getItem("face_violations") || "0");
+let noFaceViolations = parseInt(sessionStorage.getItem("noface_violations") || "0");
+
+const runDetectionLoop = async () => {
+  const redirectedFlag = sessionStorage.getItem("is_redirecting") === "true";
+if (isRedirecting || redirectedFlag || !video.srcObject) return;
+
+
+  if (video.readyState === 4 && !isAlertActive && !redirectPending && !isRedirecting)    {
+    const faces = await model.estimateFaces(video, false);
+
+    if (faces.length > 1) {
+  isAlertActive = true;
+  faceViolations++;
+
+  if (!isRedirecting) {
+    alert("⚠️ Multiple faces detected!");
+  }
+
+  isAlertActive = false;
+  sessionStorage.setItem("face_violations", faceViolations);
+
+  if (faceViolations >= 3) {
+    window.location.href = "{% url 'limit_exceeded' %}?reason=multiple_faces";
+    return;
+  }
+
+} else if (faces.length === 0) {
+  isAlertActive = true;
+  noFaceViolations++;
+
+  if (!isRedirecting) {
+    alert("⚠️ No face detected! Please stay in frame.");
+  }
+
+  isAlertActive = false;
+  sessionStorage.setItem("noface_violations", noFaceViolations);
+
+  if (noFaceViolations >= 4) {
+    window.location.href = "{% url 'limit_exceeded' %}?reason=no_face";
+    return;
+  }
+}
+
+
+    console.log("faces detected:", faces.length);
+    console.log("violations - multiple:", faceViolations, "none:", noFaceViolations);
+  }
+
+  requestAnimationFrame(runDetectionLoop);
+};
+
+          runDetectionLoop();
+
+        } catch (err) {
+        console.warn("Camera access error:", err);
+
+        if (!sessionStorage.getItem("camera_alerted")) {
+          sessionStorage.setItem("camera_alerted", "true");
+          alert("🚫 Camera access is required. Please allow access and reload the page.");
+        }
+
+        // Disable all inputs
+        document.querySelectorAll('input, button, select, textarea').forEach(el => {
+          el.disabled = true;
+          el.style.cursor = 'not-allowed';
+          el.style.opacity = '0.5';
+        });
+      }
     });
 
-let tabSwitchCount = 0;
-let shouldTerminate = false;
+    // Optional: Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+  isRedirecting = true; // 🔥 This prevents alerts during redirect
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    tabSwitchCount++;
-
-    if (tabSwitchCount >= 3) {
-      shouldTerminate = true;
-    } else {
-      alert("⚠️ Switching tabs is not allowed!");
-    }
-  } else if (!document.hidden && shouldTerminate) {
-    // User came back to the tab, now show alert and redirect after they click OK
-    window.location.href = "{% url 'limit_exceeded' %}";
+  if (streamRef) {
+    streamRef.getTracks().forEach(track => track.stop());
   }
 });
+
 
   </script>
 {% endif %}
@@ -147,6 +261,13 @@ document.addEventListener("visibilitychange", () => {
         })
         .then(response => {
           if (response.ok) {
+            // ✅ Clear sessionStorage on logout
+            sessionStorage.removeItem("face_violations");
+            sessionStorage.removeItem("noface_violations");
+            sessionStorage.removeItem("camera_initialized");
+            sessionStorage.removeItem("camera_alerted");
+            sessionStorage.removeItem("cameraGranted");
+
             document.getElementById("logoutToastContainer").style.display = "block";
             setTimeout(() => {
               window.location.href = "{% url 'login' %}";
