@@ -1,9 +1,9 @@
 {
     "questions": [
-        "What are Threads?",
-        "How do you use Java streams?",
-        "What is JavaScript?",
-        "What is virtual reality (VR)?",
-        "What are lambda functions in Python?"
+        "When should you use FastAPI over Flask?",
+        "What is event logging in software development?",
+        "What are asymptotic notations?",
+        "Explain the types of VR systems.",
+        "Why are Java streams important?"
     ]
 }

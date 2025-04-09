@@ -1,202 +1,27 @@
-
-
-# import json
-# import os
-# import google.generativeai as genai
-# from django.http import JsonResponse
-# from django.shortcuts import render
-# from django.views.decorators.csrf import csrf_exempt
-# from dotenv import load_dotenv
-
-# # Load API Key
-# load_dotenv()
-# # GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-# # GEMINI_API_KEY = "AIzaSyCUUmAWPdNRByj4hAtHntFZbZizGXuojVc"    // Please Uncomment this line for running grp discussion.
-# GEMINI_API_KEY = "asd"
-# genai.configure(api_key=GEMINI_API_KEY)
-
-# # Function to generate AI responses
-# def generate_ai_response(topic, previous_responses, role):
-#     """Generate AI response for the discussion"""
-#     model = genai.GenerativeModel("gemini-pro")
-
-#     prompt = (
-#         f"You are in a group discussion on '{topic}' as a {role}. "
-#         "Engage in a natural, casual conversation. Keep it short, friendly, and relevant. "
-#         "Previous responses:\n\n"
-#         + "\n".join(previous_responses) +
-#         "\nNow respond as a participant."
-#     )
-
-#     try:
-#         response = model.generate_content(prompt)
-#         return response.text.strip()
-#     except Exception as e:
-#         return f"Error generating response: {str(e)}"
-
-# # View to handle discussion page
-# def discussion_page(request):
-#     return render(request, "discussion.html")
-
-# # API to handle user response
-# @csrf_exempt  # Allow POST requests without CSRF for testing (use middleware in production)
-# def group_discussion(request):
-#     if request.method == "POST":
-#         try:
-#             data = json.loads(request.body)
-#             topic = data.get("topic", "General")
-#             user_response = data.get("user_response", "")
-
-#             previous_responses = [f"You (User): {user_response}"]
-
-#             # Generate AI responses
-#             ai_male = generate_ai_response(topic, previous_responses, "Male Participant")
-#             ai_female = generate_ai_response(topic, previous_responses, "Female Participant")
-
-#             return JsonResponse({"ai_male": ai_male, "ai_female": ai_female})
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-#     return JsonResponse({"error": "Invalid request"}, status=400)
-
-# def group_discussion_api(request):
-#     if request.method == "POST":
-#         return JsonResponse({"message": "API received data!"})
-#     return JsonResponse({"error": "Invalid request"}, status=400)
-# ===========================================================================================================
-# import json
-# import time
-# import random
-# import numpy as np
-# import cv2
-# import base64
-# from django.http import JsonResponse, StreamingHttpResponse
-# from django.views.decorators.csrf import csrf_exempt
-# from django.shortcuts import render
-# from django.conf import settings
-# from keras.models import model_from_json
-
-# # Load Emotion Detection Model
-# emotion_model_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.json"
-# emotion_weights_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.h5"
-
-# with open(emotion_model_path, "r") as json_file:
-#     emotion_model = model_from_json(json_file.read())
-
-# emotion_model.load_weights(emotion_weights_path)
-
-# # Load Motivational Quotes
-# with open(settings.BASE_DIR / "mock_interview/ML_model/motivational_quotes.json", "r") as file:
-#     quotes_data = json.load(file)
-# quotes = quotes_data["quotes"]
-
-# # Define Emotion Labels
-# labels = {0: "fear", 1: "confused", 2: "shy", 3: "neutral", 4: "happy"}
-
-# # Load Haar Cascade for Face Detection
-# haar_file = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-# face_cascade = cv2.CascadeClassifier(haar_file)
-
-# # Configuration
-# CONFUSED_THRESHOLD = 5  # Confused for 5 seconds before showing a quote
-# QUOTE_DISPLAY_DURATION = 7  # Quote stays for 7 seconds
-# NEXT_QUOTE_DELAY = 5  # Cooldown before detecting confusion again
-
-# # Variables for tracking quotes
-# confused_start_time = None
-# quote_display_time = None
-# current_quote = None
-
-# @csrf_exempt
-# def detect_emotion(request):
-#     """Detects emotion from an image sent via POST request."""
-#     global confused_start_time, quote_display_time, current_quote
-#     if request.method == "POST":
-#         try:
-#             data = json.loads(request.body)
-            
-#             if "image" not in data or not data["image"]:
-#                 return JsonResponse({"error": "Missing 'image' data"}, status=400)
-
-#             # Decode the Base64 image
-#             image_data = base64.b64decode(data["image"].split(",")[1])
-#             nparr = np.frombuffer(image_data, np.uint8)
-#             img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-#             if img is None:
-#                 return JsonResponse({"error": "Invalid image data"}, status=400)
-
-#             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#             faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-
-#             detected_emotion = "neutral"
-#             current_time = time.time()
-
-#             for (x, y, w, h) in faces:
-#                 face = gray[y:y + h, x:x + w]
-#                 face = cv2.resize(face, (48, 48))
-#                 face = np.expand_dims(face, axis=0)
-#                 face = np.expand_dims(face, axis=-1) / 255.0  # Normalize
-
-#                 emotion_prediction = emotion_model.predict(face)
-#                 emotion_index = np.argmax(emotion_prediction)
-#                 detected_emotion = labels[emotion_index]
-
-#                 # Handle Motivational Quotes
-#                 if quote_display_time is not None:
-#                     if current_time - quote_display_time < QUOTE_DISPLAY_DURATION:
-#                         return JsonResponse({"emotion": detected_emotion, "quote": current_quote})
-#                     else:
-#                         quote_display_time = None
-#                         confused_start_time = None  # Reset confusion timer
-
-#                 elif detected_emotion == "confused":
-#                     if confused_start_time is None:
-#                         confused_start_time = current_time
-#                     elif current_time - confused_start_time >= CONFUSED_THRESHOLD:
-#                         current_quote = random.choice(quotes)
-#                         quote_display_time = current_time
-#                         confused_start_time = None  # Reset timer
-#                         return JsonResponse({"emotion": detected_emotion, "quote": current_quote})
-
-#             return JsonResponse({"emotion": detected_emotion})
-
-#         except json.JSONDecodeError:
-#             return JsonResponse({"error": "Invalid JSON format"}, status=400)
-
-#         except Exception as e:
-#             return JsonResponse({"error": str(e)}, status=500)
-
-#     return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
-# def discussion_view(request):
-#     """Render the Group Discussion Page."""
-#     return render(request, "group_discussion/discussion.html")
-
+import os
 import json
 import time
 import random
+import base64
+import logging
 import numpy as np
 import cv2
-import base64
-import os
-import google.generativeai as genai
-from django.http import JsonResponse, StreamingHttpResponse
+from dotenv import load_dotenv
+from django.conf import settings
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from django.conf import settings
 from keras.models import model_from_json
-from dotenv import load_dotenv
-from gtts import gTTS
-import logging
+import google.generativeai as genai
 
+# Base Directory and Logging
+BASE_DIR = settings.BASE_DIR
 logger = logging.getLogger(__name__)
+load_dotenv()
 
 # Load Emotion Detection Model
-emotion_model_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.json"
-emotion_weights_path = settings.BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.h5"
+emotion_model_path = BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.json"
+emotion_weights_path = BASE_DIR / "mock_interview/ML_model/emotiondetector_updated.h5"
 
 with open(emotion_model_path, "r") as json_file:
     emotion_model = model_from_json(json_file.read())
@@ -204,150 +29,244 @@ with open(emotion_model_path, "r") as json_file:
 emotion_model.load_weights(emotion_weights_path)
 
 # Load Motivational Quotes
-with open(settings.BASE_DIR / "mock_interview/ML_model/motivational_quotes.json", "r") as file:
-    quotes_data = json.load(file)
-quotes = quotes_data["quotes"]
+with open(BASE_DIR / "mock_interview/ML_model/motivational_quotes.json", "r") as file:
+    quotes = json.load(file)["quotes"]
 
-# Define Emotion Labels
+# Labels and Haar Cascade
 labels = {0: "fear", 1: "confused", 2: "shy", 3: "neutral", 4: "happy"}
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-# Load Haar Cascade for Face Detection
-haar_file = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-face_cascade = cv2.CascadeClassifier(haar_file)
+# Quote display configuration
+CONFUSED_THRESHOLD = 5
+QUOTE_DISPLAY_DURATION = 7
+NEXT_QUOTE_DELAY = 5
 
-# Configuration
-CONFUSED_THRESHOLD = 5  # Confused for 5 seconds before showing a quote
-QUOTE_DISPLAY_DURATION = 7  # Quote stays for 7 seconds
-NEXT_QUOTE_DELAY = 5  # Cooldown before detecting confusion again
-
-# Variables for tracking quotes
+# Quote tracking state
 confused_start_time = None
 quote_display_time = None
 current_quote = None
 
+# Google Gemini API setup
+apikey = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=apikey)
+model = genai.GenerativeModel("models/gemini-1.5-pro")
+
 @csrf_exempt
 def detect_emotion(request):
-    """Detects emotion from an image sent via POST request."""
+    """Detect emotion and return motivational quote if user seems confused."""
     global confused_start_time, quote_display_time, current_quote
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            
-            if "image" not in data or not data["image"]:
-                return JsonResponse({"error": "Missing 'image' data"}, status=400)
 
-            # Decode the Base64 image
-            image_data = base64.b64decode(data["image"].split(",")[1])
-            nparr = np.frombuffer(image_data, np.uint8)
-            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
 
-            if img is None:
-                return JsonResponse({"error": "Invalid image data"}, status=400)
+    try:
+        data = json.loads(request.body)
+        image_base64 = data.get("image", "")
+        if not image_base64:
+            return JsonResponse({"error": "Missing 'image' data"}, status=400)
 
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        image_data = base64.b64decode(image_base64.split(",")[1])
+        nparr = np.frombuffer(image_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-            detected_emotion = "neutral"
-            current_time = time.time()
+        if img is None:
+            return JsonResponse({"error": "Invalid image data"}, status=400)
 
-            for (x, y, w, h) in faces:
-                face = gray[y:y + h, x:x + w]
-                face = cv2.resize(face, (48, 48))
-                face = np.expand_dims(face, axis=0)
-                face = np.expand_dims(face, axis=-1) / 255.0  # Normalize
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-                emotion_prediction = emotion_model.predict(face)
-                emotion_index = np.argmax(emotion_prediction)
-                detected_emotion = labels[emotion_index]
+        detected_emotion = "neutral"
+        current_time = time.time()
 
-                # Handle Motivational Quotes
-                if quote_display_time is not None:
-                    if current_time - quote_display_time < QUOTE_DISPLAY_DURATION:
-                        return JsonResponse({"emotion": detected_emotion, "quote": current_quote})
-                    else:
-                        quote_display_time = None
-                        confused_start_time = None  # Reset confusion timer
+        for (x, y, w, h) in faces:
+            face = gray[y:y + h, x:x + w]
+            face = cv2.resize(face, (48, 48))
+            face = np.expand_dims(face, axis=(0, -1)) / 255.0
 
-                elif detected_emotion == "confused":
-                    if confused_start_time is None:
-                        confused_start_time = current_time
-                    elif current_time - confused_start_time >= CONFUSED_THRESHOLD:
-                        current_quote = random.choice(quotes)
-                        quote_display_time = current_time
-                        confused_start_time = None  # Reset timer
-                        return JsonResponse({"emotion": detected_emotion, "quote": current_quote})
+            emotion_prediction = emotion_model.predict(face)
+            emotion_index = np.argmax(emotion_prediction)
+            detected_emotion = labels[emotion_index]
 
-            return JsonResponse({"emotion": detected_emotion})
+            # Handle quote logic
+            if quote_display_time and current_time - quote_display_time < QUOTE_DISPLAY_DURATION:
+                return JsonResponse({"emotion": detected_emotion, "quote": current_quote})
+            elif detected_emotion == "confused":
+                if not confused_start_time:
+                    confused_start_time = current_time
+                elif current_time - confused_start_time >= CONFUSED_THRESHOLD:
+                    current_quote = random.choice(quotes)
+                    quote_display_time = current_time
+                    confused_start_time = None
+                    return JsonResponse({"emotion": detected_emotion, "quote": current_quote})
+            else:
+                confused_start_time = None
 
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        return JsonResponse({"emotion": detected_emotion})
 
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format"}, status=400)
+    except Exception as e:
+        logger.exception("Emotion detection failed")
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 def discussion_view(request):
-    """Render the Group Discussion Page."""
-    return render(request, "group_discussion/discussion.html")
+    return render(request, "group_discussion/index.html")
 
-# Load API Key
-load_dotenv()
-# GEMINI_API_KEY = "AIzaSyCUUmAWPdNRByj4hAtHntFZbZizGXuojVc"
-GEMINI_API_KEY = "asdf"
 
-# GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "asd")  # Default key for testing
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Function to generate AI responses
-def generate_ai_response(topic, previous_responses, role):
-    """Generate AI response for the discussion"""
-    model = genai.GenerativeModel("gemini-pro")
-
+def start_grp_discussion_view(request):
+    """Generate topic and AI sample discussion."""
     prompt = (
-        f"You are in a group discussion on '{topic}' as a {role}. "
-        "Engage in a natural, casual conversation. Keep it short, friendly, and relevant. "
-        "Previous responses:\n\n"
-        + "\n".join(previous_responses) +
-        "\nNow respond as a participant."
-    )
+    "Generate a random group discussion topic. It can be related to social issues, technology, lifestyle, or current trends. Should be random on every time not the same topic\n\n"
+    "Then simulate a casual group discussion between two participants: Male and Female.\n"
+    "Each person should share 3 points in a conversational, easy-to-understand manner—as if they're casually discussing in a college or office setting.\n"
+    "The tone should be natural, friendly, and realistic. Avoid overly formal language or complex vocabulary.\n"
+    "Some points can agree with each other, and others can present different views, but everything should stay respectful and easygoing.\n\n"
+    "Provide your output in the following format:\n"
+    "Group Discussion Topic: <Topic>\n\n"
+    "Male:\n1. ...\n2. ...\n3. \n\n"
+    "Female:\n1. ...\n2. ...\n3. "
+)
+
+
+    response = model.generate_content(prompt)
+    lines = response.text.strip().splitlines()
+
+    topic, male_points, female_points, current_speaker = "", [], [], None
+    for line in lines:
+        line = line.strip()
+        if line.lower().startswith("group discussion topic"):
+            topic = line.split(":", 1)[1].strip()
+        elif line.lower().startswith("male"):
+            current_speaker = "male"
+        elif line.lower().startswith("female"):
+            current_speaker = "female"
+        elif line and line[0].isdigit() and "." in line:
+            point = line.split(".", 1)[1].strip()
+            if current_speaker == "male":
+                male_points.append(point)
+            elif current_speaker == "female":
+                female_points.append(point)
+
+    with open(BASE_DIR / "group_discussion/response.txt", "w", encoding="utf-8") as file:
+        file.write(f"Group Discussion Topic: {topic}\n\nMale:\n")
+        file.writelines(f"{i+1}. {p}\n" for i, p in enumerate(male_points))
+        file.write("\nFemale:\n")
+        file.writelines(f"{i+1}. {p}\n" for i, p in enumerate(female_points))
+
+    return render(request, "group_discussion/brainstorming.html", {"topic": topic})
+
+
+def group_discussion_view(request):
+    """Render group discussion with topic and sample responses."""
+    topic = ""
+    male_points, female_points = [], []
+
+    with open(BASE_DIR / "group_discussion/response.txt", "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+        current_section = None
+        for line in lines:
+            line = line.strip()
+            if line.startswith("Group Discussion Topic:"):
+                topic = line.split(":", 1)[1].strip()
+            elif line.startswith("Male:"):
+                current_section = "male"
+            elif line.startswith("Female:"):
+                current_section = "female"
+            elif line and line[0].isdigit():
+                point = line.split(".", 1)[1].strip()
+                if current_section == "male":
+                    male_points.append(point)
+                elif current_section == "female":
+                    female_points.append(point)
+
+    return render(request, "group_discussion/discussion.html", {
+        "topic": topic,
+        "male_points": male_points,
+        "female_points": female_points,
+        "proctored":True
+    })
+
+
+@csrf_exempt
+def save_user_gd_response(request):
+    """Save and improve user responses using Gemini."""
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
 
     try:
+        data = json.loads(request.body)
+        topic = data.get("topic", "")
+        responses = data.get("user_responses", [])
+
+        response_path = BASE_DIR / "group_discussion/user_gd_response.txt"
+        with open(response_path, "w", encoding="utf-8") as file:
+            file.write(f"Topic: {topic}\n\n")
+            for item in responses:
+                file.write(f"Round {item['round']}: {item['response']}\n")
+
+        # Use Gemini to improve the responses
+        with open(response_path, "r", encoding="utf-8") as file:
+            user_text = file.read()
+
+        prompt = (
+            "Improve the clarity, grammar, and structure of these responses for a group discussion. "
+            "Return the improved sentences as a bullet list. Don't change the context.\n\n"
+            f"{user_text}"
+        )
+
         response = model.generate_content(prompt)
-        print(response)
-        return response.text.strip()
+        improved_path = BASE_DIR / "group_discussion/improved_response.txt"
+
+        with open(improved_path, "w", encoding="utf-8") as file:
+            file.write(response.text.strip())
+
+        return JsonResponse({"status": "success", "message": "Responses saved and improved."})
+
     except Exception as e:
-        return f"Error generating response: {str(e)}"
+        logger.exception("Failed to process user responses.")
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
-# API to handle user response
-@csrf_exempt  # Allow POST requests without CSRF for testing (use middleware in production)
+
+def improve_sentences_view(request):
+    """Render the improved vs original responses, then clear files for next session."""
+    user_path = BASE_DIR / "group_discussion/user_gd_response.txt"
+    improved_path = BASE_DIR / "group_discussion/improved_response.txt"
+
+    with open(user_path, "r", encoding="utf-8") as file:
+        user_text = file.read()
+    with open(improved_path, "r", encoding="utf-8") as file:
+        improved_text = file.read()
+
+    return render(request, "group_discussion/result.html", {
+        "original": user_text,
+        "improved": improved_text
+    })
+
+
+
+@csrf_exempt
 def group_discussion(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            topic = data.get("topic", "General")
-            user_response = data.get("user_response", "")
+    """Handle ongoing user input during live discussion."""
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request"}, status=400)
 
-            previous_responses = [f"You (User): {user_response}"]
-            logger.debug(f"Previous responses: {previous_responses}")  # Use logging
-            print(f"Previous responses: {previous_responses}")  # Use print()
+    try:
+        data = json.loads(request.body)
+        topic = data.get("topic", "General")
+        user_response = data.get("user_response", "")
 
-            # ai_male = generate_ai_response(topic, previous_responses, "Male Participant")
-            # ai_female = generate_ai_response(topic, previous_responses, "Female Participant")
-            ai_male = "Hello"
-            print(f"AI Male Response: {ai_male}")  # ✅ DEBUG
-            print(f"AI Female Response: {ai_male}")  # ✅ DEBUg
-            
-            return JsonResponse({"ai_male": ai_male, "ai_female": ai_female})
+        logger.debug(f"User Response: {user_response}")
 
-        except json.JSONDecodeError:
-            logger.error("Invalid JSON received")
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        # Placeholder response – integrate AI if needed
+        ai_response = "Hello"
 
-    return JsonResponse({"error": "Invalid request"}, status=400)
+        return JsonResponse({
+            "ai_male": ai_response,
+            "ai_female": ai_response
+        })
 
-def group_discussion_api(request):
-    if request.method == "POST":
-        return JsonResponse({"message": "API received data!"})
-    return JsonResponse({"error": "Invalid request"}, status=400)
+    except json.JSONDecodeError:
+        logger.error("Invalid JSON received")
+        return JsonResponse({"error": "Invalid JSON"}, status=400)

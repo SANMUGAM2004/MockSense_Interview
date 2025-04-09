@@ -1,7 +1,7 @@
 
 from django.urls import path
 from . import views
-# from .views import quiz_view, quiz_questions, quiz_result
+
 
 urlpatterns = [
     path("", views.quiz_view, name="quiz_view"),

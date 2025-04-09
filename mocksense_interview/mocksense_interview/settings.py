@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'mock_interview',
     'group_discussion',
     'accounts',
+    'techmcq',
 ]
 
 MIDDLEWARE = [
